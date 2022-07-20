@@ -34,16 +34,31 @@ public static class CommandAnalyzer
             switch(inputs[1].ToLower())
             {
                 case "grade":
-                    Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                    if (batch is not null)
+                    if (Excuetive is not null && inputs.Length >= 4)
                     {
-                        Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
-                        if (grade is not null)
+                        Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                        if (batch_ is not null)
                         {
-                            grade.Sections = Excuetive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
-                            ShowGradeInfoOnMeetingForm(inputs[2], grade);
+                            Grade? grade = batch_.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
+                            if (grade is not null)
+                            {
+                                grade.Sections = Excuetive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
+                                ShowGradeInfoOnMeetingForm(inputs[2], grade);
+                            }
                         }
                     }
+                    break;
+                case "section":
+                    //Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                    //if (batch is not null)
+                    //{
+                    //    Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
+                    //    if (grade is not null)
+                    //    {
+                    //        grade.Sections = Excuetive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
+                    //        ShowGradeInfoOnMeetingForm(inputs[2], grade);
+                    //    }
+                    //}
                     break;
             }
         }

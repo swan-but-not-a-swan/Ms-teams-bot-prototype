@@ -12,7 +12,7 @@
     public List<Batch> GetInfo()//refactored and tested
     {
         List<Batch> batches = Db.GetBatchByTeacherName(Name);
-        if (batches.Count <= 0) throw new Exception("This tr doesn't exist");
+        if (batches.Count <= 0) throw new Exception("This Tr doesn't exist");
         else
         {
             foreach (Batch b in batches)

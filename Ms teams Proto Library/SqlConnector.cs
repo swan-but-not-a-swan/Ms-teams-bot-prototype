@@ -70,8 +70,7 @@ public class SqlConnector : IDBconnection
             sections = connection.Query<Section>("GetClassByTeacherNameandGradeId", p, commandType: CommandType.StoredProcedure).ToList();
             foreach (Section s in sections)
             {
-                Teacher? teacher = GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == TeacherName);
-                s.Teachers.Add(teacher);
+                s.Teachers[0] = GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == TeacherName);
                 s.Students = GetStudentsByClassId(s.ID);
             }
         }
@@ -98,6 +97,43 @@ public class SqlConnector : IDBconnection
             output = connection.Query<Teacher>("dbo.GetTeacherByClassId", p, commandType: CommandType.StoredProcedure).ToList();
         }
         return output;
+    }
+    public List<Batch> GetBatchByStudentName(string StudentName)
+    {
+        List<Batch> output = new List<Batch>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@StudentName", StudentName);
+            output = connection.Query<Batch>("dbo.GetBatchByStudentName", p, commandType: CommandType.StoredProcedure).ToList();
+        }
+        return output;
+    }
+    public List<Grade> GetGradeByStudentNameandBatchId(string StudentName, int BatchId)
+    {
+        List<Grade> output = new List<Grade>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@StudentName", StudentName);
+            p.Add("@BatchId", BatchId);
+            output = connection.Query<Grade>("dbo.GetGradeByStudentNameandBatchId", p, commandType: CommandType.StoredProcedure).ToList();
+        }
+        return output;
+    }
+    public List<Section> GetSectionByStudentNameandGradeId(string StudentName, int GradeId)
+    {
+        List<Section> section = new List<Section>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@StudentName", StudentName);
+            p.Add("@GradeId", GradeId);
+            section = connection.Query<Section>("GetClassByStudentNameandGradeId", p, commandType: CommandType.StoredProcedure).ToList();
+            section[0].Teachers = GetTeachersByClassId(section[0].ID);
+            section[0].Students = GetStudentsByClassId(section[0].ID); 
+        }
+        return section;
     }
     public void CreateBatch(Batch batch)//refactored and tested
     {

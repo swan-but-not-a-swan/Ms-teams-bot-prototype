@@ -10,6 +10,13 @@
     }
     public List<Batch> GetInfo()
     {
-        return new List<Batch>();
+        List<Batch> batches = Db.GetBatchByStudentName(Name) ;
+        if (batches.Count <= 0 || batches.Count > 1) throw new Exception("This Student doesn't exist");
+        else
+        {
+            batches[0].Grades = Db.GetGradeByStudentNameandBatchId(Name, batches[0].ID);
+            batches[0].Grades[0].Sections = Db.GetSectionByStudentNameandGradeId(Name, batches[0].Grades[0].ID);
+        }
+        return batches;
     }
 }
