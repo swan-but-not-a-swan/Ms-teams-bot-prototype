@@ -70,7 +70,24 @@ public class SqlConnector : IDBconnection
             sections = connection.Query<Section>("GetClassByTeacherNameandGradeId", p, commandType: CommandType.StoredProcedure).ToList();
             foreach (Section s in sections)
             {
-                s.Teachers[0] = GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == TeacherName);
+                s.Teachers.Add(GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == TeacherName));
+                s.Students = GetStudentsByClassId(s.ID);
+            }
+        }
+        return sections;
+    }
+    public List<Section> GetFullSectionByTeacherNameandGradeId(string TeacherName, int GradeId)
+    {
+        List<Section> sections = new List<Section>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@TeacherName", TeacherName);
+            p.Add("@GradeId", GradeId);
+            sections = connection.Query<Section>("GetClassByTeacherNameandGradeId", p, commandType: CommandType.StoredProcedure).ToList();
+            foreach (Section s in sections)
+            {
+                s.Teachers = GetTeachersByClassId(s.ID);
                 s.Students = GetStudentsByClassId(s.ID);
             }
         }

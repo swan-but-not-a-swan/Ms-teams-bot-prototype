@@ -11,13 +11,13 @@ namespace Ms_teams_bot_prototype
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             ApplicationConfiguration.Initialize();
-            string name = "Swan Sett Aung";
+            string name = "Tr Yamin Swe";
             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
-           // CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
-            CommandAnalyzer.ChooseMode(new Student(name, "swan@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
+             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
+            //CommandAnalyzer.ChooseMode(new Student(name, "swan@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             //CommandAnalyzer.ChooseMode(new Student(name, " ", GlobalTools.GetDb(), GlobalTools.GetLocal()));
-            //CommandAnalyzer.ChooseMode(new Administrator(name, " ", GlobalTools.GetDb(), GlobalTools.GetLocal()));
+            CommandAnalyzer.ChooseMode(new Administrator(name, " ", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             Application.Run(new MessageForm(name));
         }
     }

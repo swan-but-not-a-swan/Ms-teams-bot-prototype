@@ -59,4 +59,16 @@
         }
         else throw new Exception();
     }
+
+    public Section GetFullSection(Grade grade, char sectionName)
+    {
+        Section? section = GetSections(grade.ID).FirstOrDefault(x => x.Name == sectionName);
+        if (section is not null)
+        {
+            section.Teachers = Db.GetTeachersByClassId(section.ID);
+            section.Students = Db.GetStudentsByClassId(section.ID);
+        }
+        else throw new Exception();
+        return section;
+    }
 }

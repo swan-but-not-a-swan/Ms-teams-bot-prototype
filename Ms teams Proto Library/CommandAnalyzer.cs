@@ -45,20 +45,27 @@ public static class CommandAnalyzer
                                 grade.Sections = Excuetive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
                                 ShowGradeInfoOnMeetingForm(inputs[2], grade);
                             }
+                            else ShowText?.Invoke(nullerror);
                         }
+                        else ShowText?.Invoke(nullerror);
                     }
+                    else ShowText?.Invoke(error);
                     break;
                 case "section":
-                    //Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                    //if (batch is not null)
-                    //{
-                    //    Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
-                    //    if (grade is not null)
-                    //    {
-                    //        grade.Sections = Excuetive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
-                    //        ShowGradeInfoOnMeetingForm(inputs[2], grade);
-                    //    }
-                    //}
+                    Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                    if (batch is not null)
+                    {
+                        Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
+                        if (grade is not null && char.TryParse(inputs[4],out char sectionName))
+                        {
+                            try
+                            { 
+                                grade.Sections.Insert(0,Attendee.GetFullSection(grade, sectionName));
+                                ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], grade.Sections[0]);
+                            }
+                            catch { ShowText?.Invoke(error); }
+                        }
+                    }
                     break;
             }
         }
@@ -153,7 +160,7 @@ public static class CommandAnalyzer
     }
     public static void ChooseMode(IAttendee person)//refactored and tested
     {
-        Attendee = person;
+        Attendee = person; 
         if (person is Student s)
             Student = s;
         if (person is Teacher t)
@@ -182,6 +189,20 @@ public static class CommandAnalyzer
         foreach(var s in grade.Sections)
         {
             info.AppendLine($"{s.Name} Class, Teachers : {s.Teachers.Count} Students : {s.Students.Count}");
+        }
+        ShowText?.Invoke(info.ToString());
+    }
+    public static void ShowSectionInfoOnMeetingForm(string BatchName,string gradeName, Section section)
+    {
+        StringBuilder info = new StringBuilder();
+        info.AppendLine($"{BatchName} {gradeName} {section.Name}");
+        foreach (var t in section.Teachers)
+        {
+            info.AppendLine($"Name : {t.Name}, Email : {t.Email}, Subject : {t.Subject}");
+        }
+        foreach (var s in section.Students)
+        {
+            info.AppendLine($"Name : {s.Name}, Email : {s.Email}");
         }
         ShowText?.Invoke(info.ToString());
     }

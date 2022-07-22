@@ -8,4 +8,5 @@
     TimeSpan? Duration { get; set; }
     string Status { get; set; }
     List<Batch> GetInfo();
+    Section GetFullSection(Grade grade,char sectionName);
 }

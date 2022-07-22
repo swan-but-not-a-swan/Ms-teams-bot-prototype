@@ -11,6 +11,7 @@
     List<Batch> GetBatchByStudentName(string StudentName);
     List<Grade> GetGradeByStudentNameandBatchId(string StudentName, int BatchId);
     List<Section> GetSectionByStudentNameandGradeId(string StudentName, int GradeId);
+    List<Section> GetFullSectionByTeacherNameandGradeId(string TeacherName, int GradeId);
     void CreateBatch(Batch batch);
     void CreateGrade(Grade grade, int BatchId);
     void CreateSection(Section section, int GradeId);
