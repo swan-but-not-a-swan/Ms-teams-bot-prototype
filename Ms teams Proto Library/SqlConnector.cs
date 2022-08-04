@@ -152,6 +152,30 @@ public class SqlConnector : IDBconnection
         }
         return section;
     }
+    public List<Period> GetPeriodsWithoutNameEmailSubject(DateTime from, DateTime to, int sectionId)
+    {
+        List<Period> periods = new List<Period>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@from", from.ToShortDateString());
+            p.Add("@to", to.ToShortDateString());
+            p.Add("@classId", sectionId);
+            periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
+            if (periods.Count > 0)
+            {
+                foreach (Period pe in periods)
+                {
+                    p = new DynamicParameters();
+                    p.Add("@PeriodId", pe.ID);
+                    var t = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    pe.Attendees.Insert(0, t);
+                    pe.Attendees.AddRange(connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure));
+                }
+            }
+            return periods;
+        }
+    }
     public void CreateBatch(Batch batch)//refactored and tested
     {
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))

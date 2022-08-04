@@ -63,7 +63,7 @@ public partial class CreateMeeting : Form
     private void createMeetingButton_Click(object sender, EventArgs e)//refactored and tested
     {
         Batch b = batch;
-        b.Grades.Add(grade);
+        b.Grades[0] = grade;
         b.Grades[0].Sections.Add(section);
         MeetingInvitationForm frm = new MeetingInvitationForm(b, Educator);
         frm.Show();

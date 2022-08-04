@@ -12,6 +12,7 @@
     List<Grade> GetGradeByStudentNameandBatchId(string StudentName, int BatchId);
     List<Section> GetSectionByStudentNameandGradeId(string StudentName, int GradeId);
     List<Section> GetFullSectionByTeacherNameandGradeId(string TeacherName, int GradeId);
+    List<Period> GetPeriodsWithoutNameEmailSubject(DateTime from, DateTime to, int sectionId);
     void CreateBatch(Batch batch);
     void CreateGrade(Grade grade, int BatchId);
     void CreateSection(Section section, int GradeId);

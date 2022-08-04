@@ -16,7 +16,15 @@
             CommandAnalyzer.MakeMeeting += CommandAnalyzer_MakeMeeting1;
             CommandAnalyzer.CreateMeeting += CommandAnalyzer_CreateMeeting;
             CommandAnalyzer.GetExcelPath += CommandAnalyzer_GetExcelPath;
+            CommandAnalyzer.GetAttendence += CommandAnalyzer_GetAttendence;
         }
+
+        private void CommandAnalyzer_GetAttendence(List<Batch> batches, IAttendee Attendee)
+        {
+            AttendanceForm frm = new AttendanceForm(batches,Attendee);
+            frm.Show();
+        }
+
         private void CommandAnalyzer_GetExcelPath()//refactored and tested
         {
             DialogResult result = fbd.ShowDialog();

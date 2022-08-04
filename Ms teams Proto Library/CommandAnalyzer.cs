@@ -19,6 +19,8 @@ public static class CommandAnalyzer
     public static event createSection CreateSection;
     public delegate void createMeeting(List<Batch> batches, IEducator educator);
     public static event createMeeting CreateMeeting;
+    public delegate void getAttendence(List<Batch> batches, IAttendee Attendee);
+    public static event getAttendence GetAttendence;
     public delegate void getExcelPath();
     public static event getExcelPath GetExcelPath;
     public static string Analyze(string command)
@@ -31,7 +33,7 @@ public static class CommandAnalyzer
         string nullerror = "The value doesn't exist or is duplicated values" + Environment.NewLine;
         if (inputs[0].ToLower() == "-get" || inputs[0].ToLower() == "-g")
         {
-            switch(inputs[1].ToLower())
+            switch (inputs[1].ToLower())
             {
                 case "grade":
                     if (Excuetive is not null && inputs.Length >= 4)
@@ -56,16 +58,21 @@ public static class CommandAnalyzer
                     if (batch is not null)
                     {
                         Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
-                        if (grade is not null && char.TryParse(inputs[4],out char sectionName))
+                        if (grade is not null && char.TryParse(inputs[4], out char sectionName))
                         {
                             try
-                            { 
-                                grade.Sections.Insert(0,Attendee.GetFullSection(grade, sectionName));
+                            {
+                                grade.Sections.Insert(0, Attendee.GetFullSection(grade, sectionName)) ;
                                 ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], grade.Sections[0]);
                             }
                             catch { ShowText?.Invoke(error); }
                         }
                     }
+                    break;
+                case "attendance":
+                    GetAttendence?.Invoke(Info,Attendee);
+                    break;
+                default:
                     break;
             }
         }
