@@ -158,8 +158,8 @@ public class SqlConnector : IDBconnection
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
         {
             DynamicParameters p = new DynamicParameters();
-            p.Add("@from", from.ToShortDateString());
-            p.Add("@to", to.ToShortDateString());
+            p.Add("@from", from);
+            p.Add("@to", to);
             p.Add("@classId", sectionId);
             periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
             if (periods.Count > 0)

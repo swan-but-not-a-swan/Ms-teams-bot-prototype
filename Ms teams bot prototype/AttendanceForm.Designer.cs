@@ -96,7 +96,7 @@
             // 
             // toDataTime
             // 
-            this.toDataTime.CustomFormat = "yyyy-MM-dd";
+            this.toDataTime.CustomFormat = "MM/dd/yyyy H:mm";
             this.toDataTime.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.toDataTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.toDataTime.Location = new System.Drawing.Point(576, 198);
@@ -171,7 +171,7 @@
             // 
             // fromDateTime
             // 
-            this.fromDateTime.CustomFormat = "yyyy-MM-dd";
+            this.fromDateTime.CustomFormat = "MM/dd/yyyy H:mm";
             this.fromDateTime.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.fromDateTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.fromDateTime.Location = new System.Drawing.Point(576, 146);
