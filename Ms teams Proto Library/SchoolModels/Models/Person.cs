@@ -9,9 +9,9 @@
     public string Status { get; set; }
     public IDBconnection Db { get; set; }
     public ILocalConnection Excel { get; set; }
-    public void GetPeriods(string name,string email, string subject,DateTime from,DateTime to,Batch b)
+    public virtual void GetPeriods(string name,string email, string subject,DateTime from,DateTime to,Batch b)
     {
-        if(!(name is null || email is null || subject is null))
+        if(name.Length <= 0  || email.Length <= 0 || subject.Length <= 0)
         {
             List<Period> periods = Db.GetPeriodsWithoutNameEmailSubject(from, to, b.Grades[0].Sections[0].ID);
             if (periods.Count > 0)
@@ -21,7 +21,7 @@
                     CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
                 }
             }
+
         }
-        
     }
 }

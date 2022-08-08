@@ -54,19 +54,33 @@ public static class CommandAnalyzer
                     else ShowText?.Invoke(error);
                     break;
                 case "section":
-                    Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                    if (batch is not null)
+                    if (Attendee is Student)
                     {
-                        Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
-                        if (grade is not null && char.TryParse(inputs[4], out char sectionName))
+                        Section? section = Info[0].Grades[0].Sections[0];
+                        ShowSectionInfoOnMeetingForm(Info[0].Name, Info[0].Grades[0].Name, section);
+                    }
+                    else 
+                    {
+                        if (inputs.Length >= 4)
                         {
-                            try
+                            Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                            if (batch is not null)
                             {
-                                grade.Sections.Insert(0, Attendee.GetFullSection(grade, sectionName)) ;
-                                ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], grade.Sections[0]);
+                                Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade, change here
+                                if (grade is not null && char.TryParse(inputs[4], out char sectionName))
+                                {
+                                    try
+                                    {
+                                        Section section = Attendee.GetFullSection(grade.ID, sectionName);
+                                        ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], section);
+                                    }
+                                    catch { ShowText?.Invoke(error); }
+                                }
+                                else ShowText?.Invoke(nullerror);
                             }
-                            catch { ShowText?.Invoke(error); }
+                            else ShowText?.Invoke(nullerror);
                         }
+                        else ShowText?.Invoke(error);
                     }
                     break;
                 case "attendance":

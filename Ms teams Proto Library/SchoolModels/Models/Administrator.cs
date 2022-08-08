@@ -60,9 +60,9 @@
         else throw new Exception();
     }
 
-    public Section GetFullSection(Grade grade, char sectionName)
+    public Section GetFullSection(int gradeId, char sectionName)
     {
-        Section? section = GetSections(grade.ID).FirstOrDefault(x => x.Name == sectionName);
+        Section? section = GetSections(gradeId).FirstOrDefault(x => x.Name == sectionName);
         if (section is not null)
         {
             section.Teachers = Db.GetTeachersByClassId(section.ID);

@@ -41,9 +41,9 @@
         await Task.WhenAll(tasks);
     }
 
-    public Section GetFullSection(Grade grade, char sectionName)
+    public Section GetFullSection(int gradeId, char sectionName)
     {
-        Section? section = Db.GetFullSectionByTeacherNameandGradeId(Name, grade.ID).FirstOrDefault(x => x.Name == sectionName);
+        Section? section = Db.GetFullSectionByTeacherNameandGradeId(Name, gradeId).FirstOrDefault(x => x.Name == sectionName);
         if (section is not null)
         {
             section.Teachers = Db.GetTeachersByClassId(section.ID);

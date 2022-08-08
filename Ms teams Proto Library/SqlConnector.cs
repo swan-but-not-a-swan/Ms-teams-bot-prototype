@@ -81,10 +81,7 @@ public class SqlConnector : IDBconnection
         List<Section> sections = new List<Section>();
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
         {
-            DynamicParameters p = new DynamicParameters();
-            p.Add("@TeacherName", TeacherName);
-            p.Add("@GradeId", GradeId);
-            sections = connection.Query<Section>("GetClassByTeacherNameandGradeId", p, commandType: CommandType.StoredProcedure).ToList();
+            sections = GetSectionByTeacherNameandGradeId(TeacherName, GradeId);
             foreach (Section s in sections)
             {
                 s.Teachers = GetTeachersByClassId(s.ID);
@@ -153,6 +150,30 @@ public class SqlConnector : IDBconnection
         return section;
     }
     public List<Period> GetPeriodsWithoutNameEmailSubject(DateTime from, DateTime to, int sectionId)
+    {
+        List<Period> periods = new List<Period>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@from", from);
+            p.Add("@to", to);
+            p.Add("@classId", sectionId);
+            periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
+            if (periods.Count > 0)
+            {
+                foreach (Period pe in periods)
+                {
+                    p = new DynamicParameters();
+                    p.Add("@PeriodId", pe.ID);
+                    var t = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    pe.Attendees.Insert(0, t);
+                    pe.Attendees.AddRange(connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure));
+                }
+            }
+            return periods;
+        }
+    }
+    public List<Period> GetPeriodsWithoutSubject(DateTime from, DateTime to, int sectionId)
     {
         List<Period> periods = new List<Period>();
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
