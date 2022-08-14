@@ -68,25 +68,6 @@ public class SqlConnector : IDBconnection
             p.Add("@TeacherName", TeacherName);
             p.Add("@GradeId", GradeId);
             sections = connection.Query<Section>("GetClassByTeacherNameandGradeId", p, commandType: CommandType.StoredProcedure).ToList();
-            foreach (Section s in sections)
-            {
-                s.Teachers.Add(GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == TeacherName));
-                s.Students = GetStudentsByClassId(s.ID);
-            }
-        }
-        return sections;
-    }
-    public List<Section> GetFullSectionByTeacherNameandGradeId(string TeacherName, int GradeId)
-    {
-        List<Section> sections = new List<Section>();
-        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
-        {
-            sections = GetSectionByTeacherNameandGradeId(TeacherName, GradeId);
-            foreach (Section s in sections)
-            {
-                s.Teachers = GetTeachersByClassId(s.ID);
-                s.Students = GetStudentsByClassId(s.ID);
-            }
         }
         return sections;
     }
@@ -111,6 +92,16 @@ public class SqlConnector : IDBconnection
             output = connection.Query<Teacher>("dbo.GetTeacherByClassId", p, commandType: CommandType.StoredProcedure).ToList();
         }
         return output;
+    }
+
+    public void GetPersonIntoSection(Section section)
+    {
+        if (section is not null)
+        {
+            section.Teachers = GetTeachersByClassId(section.ID);
+            section.Students = GetStudentsByClassId(section.ID);
+        }
+        else throw new Exception();
     }
     public List<Batch> GetBatchByStudentName(string StudentName)
     {
@@ -149,7 +140,7 @@ public class SqlConnector : IDBconnection
         }
         return section;
     }
-    public List<Period> GetPeriodsWithoutNameEmailSubject(DateTime from, DateTime to, int sectionId)
+    public List<Period> GetPeriods(DateTime from, DateTime to, int sectionId)
     {
         List<Period> periods = new List<Period>();
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
@@ -159,43 +150,60 @@ public class SqlConnector : IDBconnection
             p.Add("@to", to);
             p.Add("@classId", sectionId);
             periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
-            if (periods.Count > 0)
-            {
-                foreach (Period pe in periods)
-                {
-                    p = new DynamicParameters();
-                    p.Add("@PeriodId", pe.ID);
-                    var t = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                    pe.Attendees.Insert(0, t);
-                    pe.Attendees.AddRange(connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure));
-                }
-            }
-            return periods;
         }
+        return periods;
     }
-    public List<Period> GetPeriodsWithoutSubject(DateTime from, DateTime to, int sectionId)
+    public List<Period> GetMeetingInfoWithoutNameandEmail(DateTime from, DateTime to, int sectionId)
     {
-        List<Period> periods = new List<Period>();
+        List<Period> periods = GetPeriods(from, to, sectionId);
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
         {
-            DynamicParameters p = new DynamicParameters();
-            p.Add("@from", from);
-            p.Add("@to", to);
-            p.Add("@classId", sectionId);
-            periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
             if (periods.Count > 0)
             {
                 foreach (Period pe in periods)
                 {
-                    p = new DynamicParameters();
+                    DynamicParameters p = new DynamicParameters();
                     p.Add("@PeriodId", pe.ID);
                     var t = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
                     pe.Attendees.Insert(0, t);
                     pe.Attendees.AddRange(connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure));
                 }
             }
-            return periods;
         }
+        return periods;
+    }
+    
+    //public List<Period> GetPeriodsWithNameandEmail(DateTime from, DateTime to, int sectionId)
+    //{
+    //    List<Period> periods = new List<Period>();
+    //    using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+    //    {
+    //        DynamicParameters p = new DynamicParameters();
+    //        p.Add("@from", from);
+    //        p.Add("@to", to);
+    //        p.Add("@classId", sectionId);
+    //        periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
+    //    }
+    //    return periods;
+    //}
+    public List<Period> GetMeetingInfo(DateTime from, DateTime to, int sectionId)
+    {
+        List<Period> periods = GetPeriods(from, to, sectionId);
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            if (periods.Count > 0)
+            {
+                foreach (Period pe in periods)
+                {
+                    DynamicParameters p = new DynamicParameters();
+                    p.Add("@PeriodId", pe.ID);
+                    var t = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    pe.Attendees.Insert(0, t);
+                    pe.Attendees.AddRange(connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure));
+                }
+            }
+        }
+        return periods;
     }
     public void CreateBatch(Batch batch)//refactored and tested
     {

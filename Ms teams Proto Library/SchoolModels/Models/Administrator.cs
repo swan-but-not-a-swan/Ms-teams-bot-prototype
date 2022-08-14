@@ -34,13 +34,12 @@
     {
         return Db.GetSections(gradeId);
     }
-    public List<Section> GetFullSections(int gradeId)//refactored and tested
+    public List<Section> GetFullSections(int gradeId) 
     {
         List<Section> sections= GetSections(gradeId);
         foreach(var s in sections)
         {
-            s.Teachers = Db.GetTeachersByClassId(s.ID);
-            s.Students = Db.GetStudentsByClassId(s.ID);
+            Db.GetPersonIntoSection(s);
         }
         return sections;
     }
@@ -59,16 +58,10 @@
         }
         else throw new Exception();
     }
-
     public Section GetFullSection(int gradeId, char sectionName)
     {
         Section? section = GetSections(gradeId).FirstOrDefault(x => x.Name == sectionName);
-        if (section is not null)
-        {
-            section.Teachers = Db.GetTeachersByClassId(section.ID);
-            section.Students = Db.GetStudentsByClassId(section.ID);
-        }
-        else throw new Exception();
+        Db.GetPersonIntoSection(section);
         return section;
     }
     //public List<Period> 

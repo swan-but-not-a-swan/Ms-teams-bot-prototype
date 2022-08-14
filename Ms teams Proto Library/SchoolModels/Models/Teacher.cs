@@ -20,8 +20,12 @@
                 b.Grades = Db.GetGradeByTeacherNameandBatchId(Name, b.ID);//get grades that the tr teacher
                 foreach (var g in b.Grades)
                 {
-                    
                    g.Sections = Db.GetSectionByTeacherNameandGradeId(Name, g.ID);//get sections and students and a tr
+                   foreach (Section s in g.Sections)
+                   {
+                        s.Teachers.Add(Db.GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == Name));
+                        s.Students = Db.GetStudentsByClassId(s.ID);
+                   }
                 }
             }
         }
@@ -40,16 +44,10 @@
         tasks.Add(Excel.SaveExcelAsync(batch.Name, batch.Grades[0].Name, section, period));
         await Task.WhenAll(tasks);
     }
-
     public Section GetFullSection(int gradeId, char sectionName)
     {
-        Section? section = Db.GetFullSectionByTeacherNameandGradeId(Name, gradeId).FirstOrDefault(x => x.Name == sectionName);
-        if (section is not null)
-        {
-            section.Teachers = Db.GetTeachersByClassId(section.ID);
-            section.Students = Db.GetStudentsByClassId(section.ID);
-        }
-        else throw new Exception();
+        Section? section = Db.GetSectionByTeacherNameandGradeId(Name, gradeId).FirstOrDefault(x => x.Name == sectionName);
+        Db.GetPersonIntoSection(section);
         return section;
     }
 }

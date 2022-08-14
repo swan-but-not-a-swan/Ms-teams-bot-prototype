@@ -11,17 +11,26 @@
     public ILocalConnection Excel { get; set; }
     public virtual void GetPeriods(string name,string email, string subject,DateTime from,DateTime to,Batch b)
     {
-        if(name.Length <= 0  || email.Length <= 0 || subject.Length <= 0)
+        if(name.Length <= 0  || email.Length <= 0)
         {
-            List<Period> periods = Db.GetPeriodsWithoutNameEmailSubject(from, to, b.Grades[0].Sections[0].ID);
-            if (periods.Count > 0)
+            if (subject.Length <= 0)
             {
-                foreach (Period pe in periods)
+                List<Period> periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, b.Grades[0].Sections[0].ID);
+                if (periods.Count > 0)
                 {
-                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                    foreach (Period pe in periods)
+                    {
+                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                    }
                 }
             }
+        }
+        else
+        {
+            if(subject.Length <= 0)
+            {
 
+            }
         }
     }
 }

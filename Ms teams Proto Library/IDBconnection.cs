@@ -8,11 +8,11 @@
     List<Section> GetSectionByTeacherNameandGradeId(string TeacherName, int GradeId);
     List<Student> GetStudentsByClassId(int sectionId);
     List<Teacher> GetTeachersByClassId(int sectionId);
+    public void GetPersonIntoSection(Section section);
     List<Batch> GetBatchByStudentName(string StudentName);
     List<Grade> GetGradeByStudentNameandBatchId(string StudentName, int BatchId);
     List<Section> GetSectionByStudentNameandGradeId(string StudentName, int GradeId);
-    List<Section> GetFullSectionByTeacherNameandGradeId(string TeacherName, int GradeId);
-    List<Period> GetPeriodsWithoutNameEmailSubject(DateTime from, DateTime to, int sectionId);
+    List<Period> GetMeetingInfoWithoutNameandEmail(DateTime from, DateTime to, int sectionId);
     void CreateBatch(Batch batch);
     void CreateGrade(Grade grade, int BatchId);
     void CreateSection(Section section, int GradeId);

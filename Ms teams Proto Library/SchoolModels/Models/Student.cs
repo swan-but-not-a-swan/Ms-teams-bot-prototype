@@ -29,7 +29,7 @@
     {
         if (!(name is null || email is null || subject is null))
         {
-            List<Period> periods = Db.GetPeriodsWithoutNameEmailSubject(from, to, b.Grades[0].Sections[0].ID);
+            List<Period> periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, b.Grades[0].Sections[0].ID);
             if (periods.Count > 0)
             {
                 foreach (Period pe in periods)
