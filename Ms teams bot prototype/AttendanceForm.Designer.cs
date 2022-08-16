@@ -46,6 +46,8 @@
             this.email = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.ComboBox = new System.Windows.Forms.ComboBox();
+            this.roleComboBox = new System.Windows.Forms.ComboBox();
+            this.roleLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // getAttendanceButton
@@ -58,7 +60,7 @@
             this.getAttendanceButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.getAttendanceButton.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.getAttendanceButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.getAttendanceButton.Location = new System.Drawing.Point(310, 323);
+            this.getAttendanceButton.Location = new System.Drawing.Point(324, 323);
             this.getAttendanceButton.Name = "getAttendanceButton";
             this.getAttendanceButton.Size = new System.Drawing.Size(234, 84);
             this.getAttendanceButton.TabIndex = 69;
@@ -154,6 +156,7 @@
             this.name.Name = "name";
             this.name.Size = new System.Drawing.Size(255, 36);
             this.name.TabIndex = 55;
+            this.name.TextChanged += new System.EventHandler(this.name_TextChanged);
             // 
             // nameLabel
             // 
@@ -261,6 +264,7 @@
             this.email.Name = "email";
             this.email.Size = new System.Drawing.Size(255, 36);
             this.email.TabIndex = 76;
+            this.email.TextChanged += new System.EventHandler(this.email_TextChanged);
             // 
             // label1
             // 
@@ -285,11 +289,39 @@
             this.ComboBox.Size = new System.Drawing.Size(200, 38);
             this.ComboBox.TabIndex = 77;
             // 
+            // roleComboBox
+            // 
+            this.roleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.roleComboBox.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.roleComboBox.FormattingEnabled = true;
+            this.roleComboBox.Location = new System.Drawing.Point(133, 323);
+            this.roleComboBox.Name = "roleComboBox";
+            this.roleComboBox.Size = new System.Drawing.Size(158, 45);
+            this.roleComboBox.TabIndex = 79;
+            this.roleComboBox.Visible = false;
+            // 
+            // roleLabel
+            // 
+            this.roleLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.roleLabel.AutoSize = true;
+            this.roleLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.roleLabel.ForeColor = System.Drawing.Color.DarkBlue;
+            this.roleLabel.Location = new System.Drawing.Point(36, 323);
+            this.roleLabel.Name = "roleLabel";
+            this.roleLabel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.roleLabel.Size = new System.Drawing.Size(91, 37);
+            this.roleLabel.TabIndex = 78;
+            this.roleLabel.Text = "Role : ";
+            this.roleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.roleLabel.Visible = false;
+            // 
             // AttendanceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(864, 436);
+            this.Controls.Add(this.roleComboBox);
+            this.Controls.Add(this.roleLabel);
             this.Controls.Add(this.ComboBox);
             this.Controls.Add(this.email);
             this.Controls.Add(this.label1);
@@ -336,5 +368,7 @@
         private TextBox email;
         private Label label1;
         private ComboBox ComboBox;
+        private ComboBox roleComboBox;
+        private Label roleLabel;
     }
 }

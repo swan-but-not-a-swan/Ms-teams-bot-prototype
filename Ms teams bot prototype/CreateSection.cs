@@ -92,12 +92,12 @@ public partial class CreateSection : Form
         }
         membersBinding.ResetBindings(false);
     }
-    private void createSectionButton_Click(object sender, EventArgs e)//refactored and tested
+    private void createSectionButton_Click(object sender, EventArgs e)
     {
         Grade grade = (Grade)gradeComboBox.SelectedItem;
-        grade.Sections = Excuetive.GetSections(grade.ID);
+        var sections = Excuetive.GetSections(grade.ID);
         char.TryParse(sectionNameValue.Text, out char sectionName);
-        if (char.IsUpper(sectionName) && !grade.Sections.Any(s => s.Name == sectionName))//checking whether sectionName is in caps and checking for duplication
+        if (char.IsUpper(sectionName) && !sections.Any(s => s.Name == sectionName))//checking whether sectionName is in caps and checking for duplication
         {
             if (teachers.Count > 0 && students.Count > 0)//checking whether teacherList and studentsList have value
             {

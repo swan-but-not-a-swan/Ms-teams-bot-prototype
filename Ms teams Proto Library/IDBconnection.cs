@@ -13,6 +13,9 @@
     List<Grade> GetGradeByStudentNameandBatchId(string StudentName, int BatchId);
     List<Section> GetSectionByStudentNameandGradeId(string StudentName, int GradeId);
     List<Period> GetMeetingInfoWithoutNameandEmail(DateTime from, DateTime to, int sectionId);
+    List<Period> GetMeetingInfoWithNameandEmail(DateTime from, DateTime to, int sectionId, string Name, string Email, string Role);
+    List<Period> GetMeetingInfoSubjectWithoutNameandEmail(DateTime from, DateTime to, int sectionId, string subject);
+    List<Period> GetMeetingInfoSubjectWithNameandEmail(DateTime from, DateTime to, int sectionId, string Name, string Email, string Role, string subject);
     void CreateBatch(Batch batch);
     void CreateGrade(Grade grade, int BatchId);
     void CreateSection(Section section, int GradeId);

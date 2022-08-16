@@ -172,23 +172,9 @@ public class SqlConnector : IDBconnection
         }
         return periods;
     }
-    
-    //public List<Period> GetPeriodsWithNameandEmail(DateTime from, DateTime to, int sectionId)
-    //{
-    //    List<Period> periods = new List<Period>();
-    //    using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
-    //    {
-    //        DynamicParameters p = new DynamicParameters();
-    //        p.Add("@from", from);
-    //        p.Add("@to", to);
-    //        p.Add("@classId", sectionId);
-    //        periods = connection.Query<Period>("GetPeriodsWithoutNameEmailSubject", p, commandType: CommandType.StoredProcedure).ToList();
-    //    }
-    //    return periods;
-    //}
-    public List<Period> GetMeetingInfo(DateTime from, DateTime to, int sectionId)
+    public List<Period> GetMeetingInfoSubjectWithoutNameandEmail(DateTime from, DateTime to, int sectionId,string subject)
     {
-        List<Period> periods = GetPeriods(from, to, sectionId);
+        List<Period> periods = GetPeriods(from, to, sectionId).Where(pe => pe.Subject.ToString() == subject).ToList();
         using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
         {
             if (periods.Count > 0)
@@ -200,6 +186,66 @@ public class SqlConnector : IDBconnection
                     var t = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
                     pe.Attendees.Insert(0, t);
                     pe.Attendees.AddRange(connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure));
+                }
+            }
+        }
+        return periods;
+    }
+    public List<Period> GetPeriodsWithNameandEmail(DateTime from, DateTime to, int sectionId,string Name,string Email,string Role)
+    {
+        List<Period> periods = new List<Period>();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            DynamicParameters p = new DynamicParameters();
+            p.Add("@from", from);
+            p.Add("@to", to);
+            p.Add("@classId", sectionId);
+            p.Add("@Name", Name);
+            p.Add("@Email", Email);
+            p.Add("@Role",Role);
+            periods = connection.Query<Period>("GetPeriodsWithNameEmail", p, commandType: CommandType.StoredProcedure).ToList();
+        }
+        return periods;
+    }
+    public List<Period> GetMeetingInfoWithNameandEmail(DateTime from, DateTime to, int sectionId,string Name,string Email,string Role)
+    {
+        List<Period> periods = GetPeriodsWithNameandEmail(from, to, sectionId,Name,Email,Role);
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            IAttendee s;
+            if (periods.Count > 0)
+            {
+                foreach (Period pe in periods)
+                {
+                    DynamicParameters p = new DynamicParameters();
+                    p.Add("@PeriodId", pe.ID);   
+                    if (Role == "Teacher")
+                        s = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    else
+                        s = connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault(s => s.Name == Name && s.Email == Email);
+                    pe.Attendees.Insert(0, s);
+                }
+            }
+        }
+        return periods;
+    }
+    public List<Period> GetMeetingInfoSubjectWithNameandEmail(DateTime from, DateTime to, int sectionId, string Name, string Email, string Role,string subject)
+    {
+        List<Period> periods = GetPeriodsWithNameandEmail(from, to, sectionId, Name, Email, Role).Where(pe => pe.Subject.ToString() == subject).ToList();
+        using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(CnnString))
+        {
+            IAttendee s;
+            if (periods.Count > 0)
+            {
+                foreach (Period pe in periods)
+                {
+                    DynamicParameters p = new DynamicParameters();
+                    p.Add("@PeriodId", pe.ID);
+                    if (Role == "Teacher")
+                        s = connection.Query<Teacher>("GetTeachersWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    else
+                        s = connection.Query<Student>("GetStudentsWithPeriodId", p, commandType: CommandType.StoredProcedure).FirstOrDefault(s => s.Name == Name && s.Email == Email);
+                    pe.Attendees.Insert(0, s);
                 }
             }
         }

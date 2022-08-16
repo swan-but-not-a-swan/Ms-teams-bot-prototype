@@ -9,5 +9,5 @@
     string Status { get; set; }
     List<Batch> GetInfo();
     Section GetFullSection(int gradeId,char sectionName);
-    void GetPeriods(string name, string email, string subject, DateTime from, DateTime to, Batch b);
+    void GetPeriods(string name, string email, string subject,string Role, DateTime from, DateTime to, Batch b);
 }

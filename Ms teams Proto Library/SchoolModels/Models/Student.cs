@@ -25,11 +25,22 @@
         }
         return batches;
     }
-    public override void GetPeriods(string name,string email, string subject, DateTime from, DateTime to, Batch b)
+    public override void GetPeriods(string name,string email, string subject,string Role, DateTime from, DateTime to, Batch b)
     {
-        if (!(name is null || email is null || subject is null))
+        if (subject.Length <= 0)
         {
-            List<Period> periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, b.Grades[0].Sections[0].ID);
+            List<Period> periods = Db.GetMeetingInfoWithNameandEmail(from, to, b.Grades[0].Sections[0].ID, name, email, Role);
+            if (periods.Count > 0)
+            {
+                foreach (Period pe in periods)
+                {
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                }
+            }
+        }
+        else
+        {
+            List<Period> periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, b.Grades[0].Sections[0].ID, name, email, Role, subject);
             if (periods.Count > 0)
             {
                 foreach (Period pe in periods)

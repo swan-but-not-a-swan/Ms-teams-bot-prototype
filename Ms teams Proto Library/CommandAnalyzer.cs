@@ -9,7 +9,7 @@ public static class CommandAnalyzer
     private static IStudent Student { get; set; }
     private static IAttendee Attendee { get; set; }
 
-    private static List<Batch> Info = new List<Batch>();
+     private static List<Batch> Info = new List<Batch>();
 
     public delegate void makeMeeting(string BatchName, string GradeName, Section section, IEducator educator);
     public static event makeMeeting MakeMeeting;
@@ -118,7 +118,7 @@ public static class CommandAnalyzer
                         CreateSection?.Invoke(Info, Excuetive);
                     }else ShowText?.Invoke(error);
                     break;
-                case "meeting"://refactored and tested
+                case "meeting":
                     if (Educator is not null)//check whether Edu is not null
                     {
                         if (Info.Count == 1 && Info[0].Grades.Count == 1 && Info[0].Grades[0].Sections.Count == 1)// a tr who teaches in only batch, grade and class
