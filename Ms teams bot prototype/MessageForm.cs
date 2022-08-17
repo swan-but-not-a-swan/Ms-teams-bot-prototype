@@ -71,7 +71,11 @@
             messageShowerBox.Text += command + Environment.NewLine;
             if (command.StartsWith("-"))
             {
-                CommandAnalyzer.Analyze(command);
+                command = CommandAnalyzer.Analyze(command);
+                if(command.Length > 0)
+                {
+                    messageShowerBox.Text += command + Environment.NewLine;
+                }
             }
         }
         private void messageFormLabel_Click(object sender, EventArgs e)

@@ -23,12 +23,12 @@
         Db.CreateBatch(output);
         return output;
     }
-    public Grade CreateGrade(string GradeName, int BatchId)//refactored and tested
+    public void CreateGrade(string GradeName, Batch batch)
     {
-        Grade output = new Grade();
-        output.Name = GradeName;
-        Db.CreateGrade(output, BatchId);
-        return output;
+        Grade grade = new Grade();
+        grade.Name = GradeName;
+        Db.CreateGrade(grade, batch.ID);
+        batch.Grades.Add(grade);
     }
     public List<Section> GetSections(int gradeId)//refactored and tested
     {
@@ -50,7 +50,7 @@
     public void CreateTeacher(string Name, string Email, string subject, int sectionId)
     {
         string name = GlobalTools.GetSpacedName(Name);
-        Teacher? teacher = Db.GetTeachersByClassId(sectionId).FirstOrDefault(t => t.Name == Name);
+        Teacher? teacher = Db.GetTeachersByClassId(sectionId).FirstOrDefault(t => t.Name == $"Tr {name}");
         if (teacher is null && Email.Contains("@"))//check whether a teacher is null and email has @
         {
             teacher = new Teacher { Name = $"Tr {name}", Email = Email, Subject = (Subjects)Enum.Parse(typeof(Subjects), subject) };

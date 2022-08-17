@@ -3,13 +3,12 @@ using System.Text;
 
 public static class CommandAnalyzer
 {
-    private static string Command { get; set; }
-    private static IExcuetive Excuetive { get; set; }
+    private static IExcuetive Executive { get; set; }
     private static IEducator Educator { get; set; }
     private static IStudent Student { get; set; }
     private static IAttendee Attendee { get; set; }
 
-     private static List<Batch> Info = new List<Batch>();
+    private static List<Batch> Info = new List<Batch>();
 
     public delegate void makeMeeting(string BatchName, string GradeName, Section section, IEducator educator);
     public static event makeMeeting MakeMeeting;
@@ -26,8 +25,7 @@ public static class CommandAnalyzer
     public static string Analyze(string command)
     {
         Validation();
-        Command = command;
-        string[] inputs = Command.Split(" ");
+        string[] inputs = command.Split(" ");
         string comment = "";
         string error = "Invalid Arugments or This command needs higher Authority to use" + Environment.NewLine;
         string nullerror = "The value doesn't exist or is duplicated values" + Environment.NewLine;
@@ -36,51 +34,36 @@ public static class CommandAnalyzer
             switch (inputs[1].ToLower())
             {
                 case "grade":
-                    if (Excuetive is not null && inputs.Length >= 4)
-                    {
-                        Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                        if (batch_ is not null)
-                        {
-                            Grade? grade = batch_.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
-                            if (grade is not null)
-                            {
-                                grade.Sections = Excuetive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
-                                ShowGradeInfoOnMeetingForm(inputs[2], grade);
-                            }
-                            else ShowText?.Invoke(nullerror);
-                        }
-                        else ShowText?.Invoke(nullerror);
-                    }
-                    else ShowText?.Invoke(error);
+                    if (Executive is null || inputs.Length < 4) return error;
+                    Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                    if (batch is null) return nullerror;
+                    Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
+                    if (grade is null) return nullerror;
+                    grade.Sections = Executive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
+                    ShowGradeInfoOnMeetingForm(inputs[2], grade);
                     break;
                 case "section":
                     if (Attendee is Student)
                     {
-                        Section? section = Info[0].Grades[0].Sections[0];
-                        ShowSectionInfoOnMeetingForm(Info[0].Name, Info[0].Grades[0].Name, section);
+                        ShowSectionInfoOnMeetingForm(Info[0].Name, Info[0].Grades[0].Name, Info[0].Grades[0].Sections[0]);
                     }
                     else 
                     {
-                        if (inputs.Length >= 4)
+                        if (inputs.Length < 4) return error;
+                        Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                        if (batch_ is null) return nullerror;
+                        Grade? grade_ = batch_.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade, change here
+                        if (grade_ is null) return nullerror;
+                        if(char.TryParse(inputs[4], out char sectionName))
                         {
-                            Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                            if (batch is not null)
+                            try
                             {
-                                Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade, change here
-                                if (grade is not null && char.TryParse(inputs[4], out char sectionName))
-                                {
-                                    try
-                                    {
-                                        Section section = Attendee.GetFullSection(grade.ID, sectionName);
-                                        ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], section);
-                                    }
-                                    catch { ShowText?.Invoke(error); }
-                                }
-                                else ShowText?.Invoke(nullerror);
+                                Section section = Attendee.GetFullSection(grade_.ID, sectionName);
+                                ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], section);
                             }
-                            else ShowText?.Invoke(nullerror);
+                            catch { return error; }
                         }
-                        else ShowText?.Invoke(error);
+                        else return error;
                     }
                     break;
                 case "attendance":
@@ -94,79 +77,63 @@ public static class CommandAnalyzer
         {
             switch (inputs[1].ToLower())
             {
-                case "batch"://refactored and tested
-                    if ((Excuetive is not null && inputs.Length >= 3) && !Info.Any(b => b.Name.ToLower() == inputs[2].ToLower()))//check whether E is not null,check input length, and check for duplication
-                    {
-                        Batch batch = Excuetive.CreateBatch(inputs[2]);
-                        Info.Add(batch);
-                    }else ShowText?.Invoke(error);
+                case "batch":
+                    if ((Executive is null || inputs.Length < 3) || Info.Any(b => b.Name.ToLower() == inputs[2].ToLower())) return error;
+                    Info.Add(Executive.CreateBatch(inputs[2]));
                     break;
-                case "grade"://refactored and tested
-                    if (Excuetive is not null && inputs.Length >= 4)//check whether E is not null, and check input length
-                    {
-                        Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                        if (batch is not null && !batch.Grades.Any(g => g.Name.ToLower() == inputs[3].ToLower()))//check whether b is null and check for duplication
-                        {
-                            Grade grade = Excuetive.CreateGrade(inputs[3], batch.ID);
-                            batch.Grades.Add(grade);
-                        }else ShowText?.Invoke(nullerror);
-                    }else ShowText?.Invoke(error);
+                case "grade":
+                    if (Executive is null || inputs.Length < 4) return error;
+                    Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);
+                    if (batch is null || batch.Grades.Any(g => g.Name.ToLower() == inputs[3].ToLower())) return nullerror;
+                    Executive.CreateGrade(inputs[3], batch);
                     break;
-                case "section"://refactored and tested
-                    if (Excuetive is not null)//check whether E is not null
-                    {
-                        CreateSection?.Invoke(Info, Excuetive);
-                    }else ShowText?.Invoke(error);
+                case "section":
+                    if (Executive is null) return error;
+                    CreateSection?.Invoke(Info, Executive);
                     break;
                 case "meeting":
-                    if (Educator is not null)//check whether Edu is not null
+                    if (Educator is null) return error;
+                    if (Info.Count == 1 && Info[0].Grades.Count == 1 && Info[0].Grades[0].Sections.Count == 1)// a tr who teaches in only batch, grade and class
                     {
-                        if (Info.Count == 1 && Info[0].Grades.Count == 1 && Info[0].Grades[0].Sections.Count == 1)// a tr who teaches in only batch, grade and class
+                        MakeMeeting?.Invoke(Info[0].Name, Info[0].Grades[0].Name, Info[0].Grades[0].Sections[0], Educator);
+                    }
+                    else if (Info.Count == 1 && Info[0].Grades.Count == 1)// a tr who teaches in only batch and grade
+                    {
+                        if (inputs.Length < 3) return error;
+                        if (char.TryParse(inputs[2], out char sectionName))
                         {
-                            MakeMeeting?.Invoke(Info[0].Name, Info[0].Grades[0].Name, Info[0].Grades[0].Sections[0], Educator);
+                            Section? section_ = Info[0].Grades[0].Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
+                            if (section_ is null) return nullerror;
+                            MakeMeeting?.Invoke(Info[0].Name, Info[0].Grades[0].Name, section_, Educator);
                         }
-                        else if (Info.Count == 1 && Info[0].Grades.Count == 1)// a tr who teaches in only batch and grade
-                        {
-                            if (inputs.Length >= 3 && char.TryParse(inputs[2], out char sectionName))//checks the input length and whether sectionName is valid
-                            {
-                                Section? section = Info[0].Grades[0].Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
-                                if (section is not null)
-                                {
-                                    MakeMeeting?.Invoke(Info[0].Name, Info[0].Grades[0].Name, section, Educator);
-                                }else ShowText?.Invoke(nullerror);
-                            }else ShowText?.Invoke(error);
-                        }else CreateMeeting?.Invoke(Info, Educator);
-                    }else ShowText?.Invoke(error);
+                        else return error;
+                    }
+                    else
+                    {
+                        CreateMeeting?.Invoke(Info, Educator);
+                    }
                     break;
                 case "tr":
-                    if (Excuetive is not null && inputs.Length >= 8)
-                    {
-                        Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[3]);//get one batch
-                        if (batch is not null)
-                        {
-                            Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[4]);//get one grade
-                            if (grade is not null)
-                            {
-                                Section? section = Excuetive.GetSections(grade.ID).FirstOrDefault(x => x.Name.ToString() == inputs[5]);
-                                if (section is not null)
-                                {
-                                    try { Excuetive.CreateTeacher(inputs[2], inputs[7], inputs[6], section.ID); }
-                                    catch { ShowText?.Invoke(error); }
-                                }else ShowText?.Invoke(nullerror);
-                            }else ShowText?.Invoke(nullerror);
-                        }else ShowText?.Invoke(nullerror);
-                    }else ShowText?.Invoke(error);
+                    if (Executive is null || inputs.Length < 8) return error;  
+                    Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[3]);//get one batch
+                    if (batch_ is null) return nullerror;
+                    Grade? grade = batch_.Grades.FirstOrDefault(x => x.Name == inputs[4]);//get one grade
+                    if (grade is null) return nullerror;
+                    Section? section = Executive.GetSections(grade.ID).FirstOrDefault(x => x.Name.ToString() == inputs[5]);
+                    if (section is null) return nullerror;
+                    try { Executive.CreateTeacher(inputs[2], inputs[7], inputs[6], section.ID); }
+                    catch { return nullerror; }
                     break;
                 case "excel"://refactored and tested
-                    if (inputs.Length > 2)
+                    if (inputs.Length < 2) return error;
+                    if (inputs[2].ToLower() == "on")
                     {
-                        if (inputs[2].ToLower() == "on")
-                        {
-                            GlobalTools.Excel = true;
-                            GetExcelPath?.Invoke();
-                        }
-                        if (inputs[2].ToLower() == "off")
-                            GlobalTools.Excel = false;
+                        GlobalTools.Excel = true;
+                        GetExcelPath?.Invoke();
+                    }
+                    if (inputs[2].ToLower() == "off")
+                    {
+                        GlobalTools.Excel = false;
                     }
                     break;
             }
@@ -175,8 +142,8 @@ public static class CommandAnalyzer
     }
     public static void Validation()//refactored and tested
     {
-        if (Excuetive is null && Educator is null && Student is null) throw new Exception("No modes are selected");
-        if ((Excuetive is not null && Educator is not null) || (Educator is not null && Student is not null) || (Excuetive is not null && Student is not null))
+        if (Executive is null && Educator is null && Student is null) throw new Exception("No modes are selected");
+        if ((Executive is not null && Educator is not null) || (Educator is not null && Student is not null) || (Executive is not null && Student is not null))
             throw new Exception("Two modes are selected");
     }
     public static void ChooseMode(IAttendee person)//refactored and tested
@@ -187,7 +154,7 @@ public static class CommandAnalyzer
         if (person is Teacher t)
             Educator = t;
         if (person is Administrator a)
-            Excuetive = a;
+            Executive = a;
         Info = person.GetInfo();//gets info
     }
     public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//refactored and tested
