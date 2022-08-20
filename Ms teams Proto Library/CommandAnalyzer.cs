@@ -84,7 +84,18 @@ public static class CommandAnalyzer
                         switch(inputs.Length)
                         {
                             case 5:
-                                Attendee.GetPeriods("", "", "", "", "", "", DateTime.Today, DateTime.Now, batch_, section_);
+                                Attendee.GetPeriods(batch_.Name, grade_.Name, "", "", "", "", DateTime.Today, DateTime.Now, section_);
+                                break;
+                            case 6:
+                                Attendee.GetPeriods(batch_.Name, grade_.Name, "", "", inputs[5],"", DateTime.Today, DateTime.Now, section_);
+                                break;
+                            case 8:
+                                string name_ = GlobalTools.GetSpacedName(inputs[5]);
+                                Attendee.GetPeriods(batch_.Name, grade_.Name, name_, inputs[6], "", inputs[7], DateTime.Today, DateTime.Now, section_);
+                                break;
+                            case 9:
+                                string name = GlobalTools.GetSpacedName(inputs[6]);
+                                Attendee.GetPeriods(batch_.Name, grade_.Name, name, inputs[7], inputs[5], inputs[8], DateTime.Today, DateTime.Now, section_);
                                 break;
                         }
                     }

@@ -77,7 +77,7 @@
                     Batch b = batch;
                     b.Grades[0] = grade;
                     b.Grades[0].Sections[0] = section;
-                    Attendee.GetPeriods(batch.Name,grade.Name,name.Text, email.Text, subjectComboBox.Text, roleComboBox.Text, fromDateTime.Value, toDataTime.Value, b,section);
+                    Attendee.GetPeriods(batch.Name,grade.Name,name.Text, email.Text, subjectComboBox.Text, roleComboBox.Text, fromDateTime.Value, toDataTime.Value, section);
                     this.Close();
                 }
                 else MessageBox.Show("Either name or email value needed");

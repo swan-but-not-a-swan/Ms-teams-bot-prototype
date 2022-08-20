@@ -25,27 +25,27 @@
         }
         return batches;
     }
-    public override void GetPeriods(string batchName, string GradeName, string name, string email, string subject, string Role, DateTime from, DateTime to, Batch b, Section section)
+    public override void GetPeriods(string batchName, string GradeName, string name , string email, string subject, string Role, DateTime from, DateTime to, Section section)
     {
         if (subject.Length <= 0)
         {
-            List<Period> periods = Db.GetMeetingInfoWithNameandEmail(from, to, b.Grades[0].Sections[0].ID, name, email, Role);
+            List<Period> periods = Db.GetMeetingInfoWithNameandEmail(from, to, section.ID, Name, Email, "Student");
             if (periods.Count > 0)
             {
                 foreach (Period pe in periods)
                 {
-                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
                 }
             }
         }
         else
         {
-            List<Period> periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, b.Grades[0].Sections[0].ID, name, email, Role, subject);
+            List<Period> periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, section.ID, Name, Email, Role, subject);
             if (periods.Count > 0)
             {
                 foreach (Period pe in periods)
                 {
-                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName,section, pe);
                 }
             }
         }

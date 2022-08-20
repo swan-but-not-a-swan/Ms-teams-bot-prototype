@@ -12,7 +12,7 @@ namespace Ms_teams_bot_prototype
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             ApplicationConfiguration.Initialize();
             string name = "Tr Moe Thida Tin";
-            //string name = "Tr Yamin Swe";
+            //string name = "Swan Sett Aung";
             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
