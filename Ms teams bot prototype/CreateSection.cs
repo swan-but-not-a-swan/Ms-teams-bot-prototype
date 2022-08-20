@@ -38,23 +38,27 @@ public partial class CreateSection : Form
             gradeComboBox.DisplayMember = "";
         }
     }
-    private void addButton_Click(object sender, EventArgs e)//refactored and tested
+    private void addButton_Click(object sender, EventArgs e)
     {
         bool validation = GlobalTools.ValidateData(nameValue.Text, emailValue.Text);
         bool duplicateChecker = !person.Any(p => p.Name == nameValue.Text || p.Email == emailValue.Text);
-        if (validation && duplicateChecker)//value validation and duplication checker
+        if (validation && duplicateChecker )//value validation and duplication checker
         {
             if (role is Teacher)
             {
-                Teacher t = new Teacher(nameValue.Text, emailValue.Text, GlobalTools.GetDb(), GlobalTools.GetLocal());
-                string subject = (string)subjectComboBox.SelectedItem;
-                t.Subject = (Subjects)Enum.Parse(typeof(Subjects), subject);
-                person.Add(t);
-                teachers.Add(t);
+                if (emailValue.Text.StartsWith("Tr"))
+                {
+                    Teacher t = new Teacher { Name = nameValue.Text, Email = emailValue.Text };
+                    string subject = (string)subjectComboBox.SelectedItem;
+                    t.Subject = (Subjects)Enum.Parse(typeof(Subjects), subject);
+                    person.Add(t);
+                    teachers.Add(t);
+                }
+                else MessageBox.Show("Tr's Email needs to start with Tr", "Input Error");
             }
             if (role is Student)
             {
-                Student s = new Student(nameValue.Text, emailValue.Text, GlobalTools.GetDb(), GlobalTools.GetLocal());
+                Student s = new Student { Name = nameValue.Text, Email = emailValue.Text };
                 person.Add(s);
                 students.Add(s);
             }
@@ -95,9 +99,8 @@ public partial class CreateSection : Form
     private void createSectionButton_Click(object sender, EventArgs e)
     {
         Grade grade = (Grade)gradeComboBox.SelectedItem;
-        var sections = Excuetive.GetSections(grade.ID);
         char.TryParse(sectionNameValue.Text, out char sectionName);
-        if (char.IsUpper(sectionName) && !sections.Any(s => s.Name == sectionName))//checking whether sectionName is in caps and checking for duplication
+        if (char.IsUpper(sectionName) && !grade.Sections.Any(s => s.Name == sectionName))//checking whether sectionName is in caps and checking for duplication
         {
             if (teachers.Count > 0 && students.Count > 0)//checking whether teacherList and studentsList have value
             {
@@ -105,7 +108,7 @@ public partial class CreateSection : Form
                 section.Name = sectionName;
                 section.Teachers = teachers;
                 section.Students = students;
-                Excuetive.CreateSection(section, grade.ID);
+                Excuetive.CreateSection(section, grade);
                 this.Close();
             }
             else MessageBox.Show("There's either no teacher or student information", "Input-Error");

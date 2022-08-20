@@ -7,12 +7,16 @@
         Db = db;
         Excel = local;
     }
-    public List<Batch> GetInfo()//refactored and tested
+    public List<Batch> GetInfo()
     {
-        List<Batch> batches = Db.GetBatches();//get all the batches
+        List<Batch> batches = Db.GetBatches();
         foreach (var b in batches)
         {
-            b.Grades = Db.GetGrades(b.ID);//get all the grades in a certain batch
+            b.Grades = Db.GetGrades(b.ID);
+            foreach(Grade g in b.Grades )
+            {
+                g.Sections = Db.GetSections(g.ID);
+            }
         }
         return batches;
     }
@@ -30,39 +34,30 @@
         Db.CreateGrade(grade, batch.ID);
         batch.Grades.Add(grade);
     }
-    public List<Section> GetSections(int gradeId)//refactored and tested
+    public void GetFullSections(Grade grade) 
     {
-        return Db.GetSections(gradeId);
-    }
-    public List<Section> GetFullSections(int gradeId) 
-    {
-        List<Section> sections= GetSections(gradeId);
-        foreach(var s in sections)
+        foreach(var s in grade.Sections)
         {
             Db.GetPersonIntoSection(s);
         }
-        return sections;
+        grade.Sections.OrderBy(s => s.Name).ToList();
     }
-    public void CreateSection(Section section, int gradeId)//refactored and tested
+    public void CreateSection(Section section, Grade grade)//refactored and tested
     {
-        Db.CreateSection(section, gradeId);
+        Db.CreateSection(section, grade.ID);
+        grade.Sections.Add(section);
     }
-    public void CreateTeacher(string Name, string Email, string subject, int sectionId)
+    public void CreateTeacher(string Name, string Email, string subject, int sectionID)
     {
         string name = GlobalTools.GetSpacedName(Name);
-        Teacher? teacher = Db.GetTeachersByClassId(sectionId).FirstOrDefault(t => t.Name == $"Tr {name}");
-        if (teacher is null && Email.Contains("@"))//check whether a teacher is null and email has @
+        Teacher? teacher = Db.GetTeachersByClassId(sectionID).FirstOrDefault(t => t.Name == $"Tr {name}");
+        bool validate = GlobalTools.ValidateData(Name, Email) && Email.StartsWith("Tr");
+        if (teacher is null && validate)//check whether a teacher is null and email has @
         {
             teacher = new Teacher { Name = $"Tr {name}", Email = Email, Subject = (Subjects)Enum.Parse(typeof(Subjects), subject) };
-            Db.CreateTeacher(teacher, sectionId);
+            Db.CreateTeacher(teacher, sectionID);
         }
         else throw new Exception();
-    }
-    public Section GetFullSection(int gradeId, char sectionName)
-    {
-        Section? section = GetSections(gradeId).FirstOrDefault(x => x.Name == sectionName);
-        Db.GetPersonIntoSection(section);
-        return section;
     }
     //public List<Period> 
 }

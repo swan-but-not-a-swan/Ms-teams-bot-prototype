@@ -44,10 +44,4 @@
         tasks.Add(Excel.SaveExcelAsync(batch.Name, batch.Grades[0].Name, section, period));
         await Task.WhenAll(tasks);
     }
-    public Section GetFullSection(int gradeId, char sectionName)
-    {
-        Section? section = Db.GetSectionByTeacherNameandGradeId(Name, gradeId).FirstOrDefault(x => x.Name == sectionName);
-        Db.GetPersonIntoSection(section);
-        return section;
-    }
 }

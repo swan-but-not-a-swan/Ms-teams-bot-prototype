@@ -1,11 +1,11 @@
 #1{ (each command in #1 will use the same parameter as #3
-Get Sec1 F -> get all the attendance of every period of a certain class for the particular day. ("Get" is not a case sensitive keyword)
+-Get Attendance Til Sec1 F -> get all the attendance of every period of a certain class for the particular day. ("Get" is not a case sensitive keyword)
 Get Sec1 F Science -> get the attendance of the certain period for the particular day. (this will be the default command when the period finishes)
 Get Sec1 F Science Swan -> get the attendance of a certain student in a certain class and period of the particular day. (Every command will give out an unique ID )
 Get Sec1 F Swan -> get the attendance of a certain student in every period of a certain class for the particular day.
 }
 
-#4{ this one
+#4{ this one done
 Get Sec1 F 2,4,2022 4,6,2022 -> get all the attendance of every period of a certain class for a certain datetimeperiod.   f
 Get Sec1 F Science 2,4,2022 4,6,2022 -> get all the attendance of a certain period for a certain datetimeperiod.
 Get Sec1 F Science Swan 2,4,2022 4,6,2022 -> get the attendance of a certain student in a certain class and period for a certain datetimeperiod.

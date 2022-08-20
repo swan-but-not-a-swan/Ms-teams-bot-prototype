@@ -4,18 +4,11 @@ public static class GlobalTools
 {
     public static bool Excel = false;
     public static string ExcelPath { get; set; }
-    public static bool ValidateData(string Name, string Email)//refactored and tested
+    public static bool ValidateData(string Name, string Email)
     {
-        bool output = true;
-        if (Name.Length <= 0)
-        {
-            output = false;
-        }
-        if (Email.Length <= 0 || (Email.Contains("@") == false))
-        {
-            output = false;
-        }
-        return output;
+        if (Name.Length <= 0) return false;
+        if (Email.Length <= 0 || (Email.EndsWith("@ilbc.edu.mm") == false)) return false;
+        return true;
     }
     public static IDBconnection GetDb()
     {

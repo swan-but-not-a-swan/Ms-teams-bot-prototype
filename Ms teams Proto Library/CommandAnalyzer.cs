@@ -39,7 +39,7 @@ public static class CommandAnalyzer
                     if (batch is null) return nullerror;
                     Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
                     if (grade is null) return nullerror;
-                    grade.Sections = Executive.GetFullSections(grade.ID).OrderBy(s => s.Name).ToList();
+                    Executive.GetFullSections(grade);
                     ShowGradeInfoOnMeetingForm(inputs[2], grade);
                     break;
                 case "section":
@@ -50,16 +50,17 @@ public static class CommandAnalyzer
                     else 
                     {
                         if (inputs.Length < 4) return error;
-                        Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                        if (batch_ is null) return nullerror;
-                        Grade? grade_ = batch_.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade, change here
-                        if (grade_ is null) return nullerror;
-                        if(char.TryParse(inputs[4], out char sectionName))
+                        Batch? batch__ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                        if (batch__ is null) return nullerror;
+                        Grade? grade__ = batch__.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade, change here
+                        if (grade__ is null) return nullerror;
+                        if(char.TryParse(inputs[4], out char sectionName__))
                         {
                             try
                             {
-                                Section section = Attendee.GetFullSection(grade_.ID, sectionName);
-                                ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], section);
+                                Section? section_ = grade__.Sections.FirstOrDefault(x => x.Name == sectionName__);//get one section
+                                if (section_ is null) return nullerror;
+                                ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], Attendee.GetFullSection(grade__.ID, section_));
                             }
                             catch { return error; }
                         }
@@ -67,7 +68,27 @@ public static class CommandAnalyzer
                     }
                     break;
                 case "attendance":
-                    GetAttendence?.Invoke(Info,Attendee);
+                    if (inputs.Length < 5)
+                    {
+                        GetAttendence?.Invoke(Info, Attendee);
+                        break;
+                    }
+                    Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
+                    if (batch_ is null) return nullerror;
+                    Grade? grade_ = batch_.Grades.FirstOrDefault(x => x.Name == inputs[3]);
+                    if (grade_ is null) return nullerror;
+                    if (char.TryParse(inputs[4], out char sectionName))
+                    {
+                        Section? section_ = grade_.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
+                        if (section_ is null) return nullerror;
+                        switch(inputs.Length)
+                        {
+                            case 5:
+                                Attendee.GetPeriods("", "", "", "", "", "", DateTime.Today, DateTime.Now, batch_, section_);
+                                break;
+                        }
+                    }
+                    else return error;
                     break;
                 default:
                     break;
@@ -119,10 +140,14 @@ public static class CommandAnalyzer
                     if (batch_ is null) return nullerror;
                     Grade? grade = batch_.Grades.FirstOrDefault(x => x.Name == inputs[4]);//get one grade
                     if (grade is null) return nullerror;
-                    Section? section = Executive.GetSections(grade.ID).FirstOrDefault(x => x.Name.ToString() == inputs[5]);
-                    if (section is null) return nullerror;
-                    try { Executive.CreateTeacher(inputs[2], inputs[7], inputs[6], section.ID); }
-                    catch { return nullerror; }
+                    if (char.TryParse(inputs[5], out char sectionName_))
+                    {
+                        Section? section = grade.Sections.FirstOrDefault(x => x.Name == sectionName_);
+                        if (section is null) return nullerror;
+                        try { Executive.CreateTeacher(inputs[2], inputs[7], inputs[6], section.ID); }
+                        catch { return nullerror; }
+                    }
+                    else return error;
                     break;
                 case "excel"://refactored and tested
                     if (inputs.Length < 2) return error;

@@ -8,6 +8,6 @@
     TimeSpan? Duration { get; set; }
     string Status { get; set; }
     List<Batch> GetInfo();
-    Section GetFullSection(int gradeId,char sectionName);
-    void GetPeriods(string name, string email, string subject,string Role, DateTime from, DateTime to, Batch b);
+    Section GetFullSection(int gradeId,Section section);
+    void GetPeriods(string batchName,string GradeName,string name, string email, string subject,string Role, DateTime from, DateTime to, Batch b,Section section);
 }

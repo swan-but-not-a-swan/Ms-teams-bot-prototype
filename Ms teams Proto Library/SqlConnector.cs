@@ -96,12 +96,9 @@ public class SqlConnector : IDBconnection
 
     public void GetPersonIntoSection(Section section)
     {
-        if (section is not null)
-        {
-            section.Teachers = GetTeachersByClassId(section.ID);
-            section.Students = GetStudentsByClassId(section.ID);
-        }
-        else throw new Exception();
+        if (section is null) throw new Exception();
+        section.Teachers = GetTeachersByClassId(section.ID);
+        section.Students = GetStudentsByClassId(section.ID);
     }
     public List<Batch> GetBatchByStudentName(string StudentName)
     {

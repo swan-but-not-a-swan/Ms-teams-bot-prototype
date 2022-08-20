@@ -9,29 +9,35 @@
     public string Status { get; set; }
     public IDBconnection Db { get; set; }
     public ILocalConnection Excel { get; set; }
-    public virtual void GetPeriods(string name,string email, string subject,string Role,DateTime from,DateTime to,Batch b)
+    public virtual Section GetFullSection(int gradeId, Section section)
+    {
+        Section output = new Section { ID = section.ID, Name = section.Name };
+        Db.GetPersonIntoSection(output);
+        return output;
+    }
+    public virtual void GetPeriods(string batchName, string GradeName,string name,string email, string subject,string Role,DateTime from,DateTime to,Batch b,Section section)
     {
         if(name.Length <= 0  || email.Length <= 0)
         {
             if (subject.Length <= 0)
             {
-                List<Period> periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, b.Grades[0].Sections[0].ID);
+                List<Period> periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, section.ID);
                 if (periods.Count > 0)
                 {
                     foreach (Period pe in periods)
                     {
-                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
                     }
                 }
             }
             else
             {
-                List<Period> periods = Db.GetMeetingInfoSubjectWithoutNameandEmail(from, to, b.Grades[0].Sections[0].ID,subject);
+                List<Period> periods = Db.GetMeetingInfoSubjectWithoutNameandEmail(from, to, section.ID,subject);
                 if (periods.Count > 0)
                 {
                     foreach (Period pe in periods)
                     {
-                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, b.Grades[0].Sections[0], pe);
+                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(b.Name, b.Grades[0].Name, section, pe);
                     }
                 }
             }

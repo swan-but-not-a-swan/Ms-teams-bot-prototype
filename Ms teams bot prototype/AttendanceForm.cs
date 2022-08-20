@@ -12,16 +12,6 @@
             InitializeComponent(); 
             this.Attendee = Attendee;
             this.Batches = Batches;
-            if(Attendee is IExcuetive e)
-            {
-                foreach (var b in Batches)
-                {
-                    foreach (var g in b.Grades)
-                    {
-                        g.Sections = e.GetSections(g.ID);
-                    }
-                }
-            }
             if(Attendee is Student s)
             {
                 name.Text = s.Name;
@@ -87,7 +77,7 @@
                     Batch b = batch;
                     b.Grades[0] = grade;
                     b.Grades[0].Sections[0] = section;
-                    Attendee.GetPeriods(name.Text, email.Text, subjectComboBox.Text, roleComboBox.Text, fromDateTime.Value, toDataTime.Value, b);
+                    Attendee.GetPeriods(batch.Name,grade.Name,name.Text, email.Text, subjectComboBox.Text, roleComboBox.Text, fromDateTime.Value, toDataTime.Value, b,section);
                     this.Close();
                 }
                 else MessageBox.Show("Either name or email value needed");

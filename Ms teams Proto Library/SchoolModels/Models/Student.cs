@@ -9,7 +9,7 @@
         Excel = local;
     }
 
-    public Section GetFullSection(int gradeId, char sectionName)
+    public override Section GetFullSection(int gradeId, Section section)
     {
         throw new NotImplementedException();
     }
@@ -25,7 +25,7 @@
         }
         return batches;
     }
-    public override void GetPeriods(string name,string email, string subject,string Role, DateTime from, DateTime to, Batch b)
+    public override void GetPeriods(string batchName, string GradeName, string name, string email, string subject, string Role, DateTime from, DateTime to, Batch b, Section section)
     {
         if (subject.Length <= 0)
         {
