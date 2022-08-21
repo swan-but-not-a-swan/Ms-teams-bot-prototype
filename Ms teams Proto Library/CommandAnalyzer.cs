@@ -25,7 +25,7 @@ public static class CommandAnalyzer
     public static string Analyze(string command)
     {
         Validation();
-        string[] inputs = command.Split(" ");
+        string[] inputs = command.Trim().Split(" ");
         string comment = "";
         string error = "Invalid Arugments or This command needs higher Authority to use" + Environment.NewLine;
         string nullerror = "The value doesn't exist or is duplicated values" + Environment.NewLine;
@@ -81,23 +81,7 @@ public static class CommandAnalyzer
                     {
                         Section? section_ = grade_.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
                         if (section_ is null) return nullerror;
-                        switch(inputs.Length)
-                        {
-                            case 5:
-                                Attendee.GetPeriods(batch_.Name, grade_.Name, "", "", "", "", DateTime.Today, DateTime.Now, section_);
-                                break;
-                            case 6:
-                                Attendee.GetPeriods(batch_.Name, grade_.Name, "", "", inputs[5],"", DateTime.Today, DateTime.Now, section_);
-                                break;
-                            case 8:
-                                string name_ = GlobalTools.GetSpacedName(inputs[5]);
-                                Attendee.GetPeriods(batch_.Name, grade_.Name, name_, inputs[6], "", inputs[7], DateTime.Today, DateTime.Now, section_);
-                                break;
-                            case 9:
-                                string name = GlobalTools.GetSpacedName(inputs[6]);
-                                Attendee.GetPeriods(batch_.Name, grade_.Name, name, inputs[7], inputs[5], inputs[8], DateTime.Today, DateTime.Now, section_);
-                                break;
-                        }
+                        if(!Attendee.FurtherAnalyze(inputs, section_)) return nullerror;
                     }
                     else return error;
                     break;
