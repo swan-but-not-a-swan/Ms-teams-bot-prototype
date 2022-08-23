@@ -1,4 +1,6 @@
-﻿public abstract class Person
+﻿using System.Globalization;
+
+public abstract class Person
 {
     public int ID { get; set; }
     public string Name { get; set  ; }
@@ -22,7 +24,7 @@
             case 5: //-g attendance Til Secondary2 F
                 GetPeriods(inputs[2], inputs[3], "", "", "", "", DateTime.Today, DateTime.Now, section);
                 break;
-            case 6: //-g attendance Til Secondary2 F August_ , -g attendance Til Secondary2 F Science
+            case 6: //-g attendance Til Secondary2 F 21/8/2022, , -g attendance Til Secondary2 F Science
                 if (inputs[5].EndsWith("_"))
                 {
                     try 
@@ -88,6 +90,7 @@
     }
     public virtual void GetPeriods(string batchName, string GradeName,string name,string email, string subject,string Role,DateTime from,DateTime to,Section section)
     {
+        
         if(name.Length <= 0  || email.Length <= 0)
         {
             if (subject.Length <= 0)
@@ -139,7 +142,7 @@
             }
         }
     }
-    public (DateTime from,DateTime to) GetMonthStartAndEnd(string month)
+    private (DateTime from,DateTime to) GetMonthStartAndEnd(string month)
     {
         string Month = month.TrimEnd('_');
         DateTime from = DateTime.ParseExact(Month, "MMMM", null);
