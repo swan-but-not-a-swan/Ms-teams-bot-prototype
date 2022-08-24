@@ -3,11 +3,11 @@ using OfficeOpenXml.Style;
 
 public class ExcelConnector : ILocalConnection
 {
-    public async Task SaveExcelAsync(string BatchName, string GradeName, Section section, Period period)//refactored and tested
+    public async Task SaveExcelAsync(string BatchName, string GradeName, Section section, Period period,FileInfo filepath)
     {
         if (GlobalTools.Excel)
         {
-            using (var package = new ExcelPackage(new FileInfo(Path.Combine(GlobalTools.ExcelPath, $"{BatchName} {GradeName} {section.Teachers[0].Name}.xlsx"))))
+            using (var package = new ExcelPackage(filepath))
             {
                 int i = 1;
                 string sectionName = section.Name.ToString();

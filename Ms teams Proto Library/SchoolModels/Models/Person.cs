@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-public abstract class Person
+﻿public abstract class Person
 {
     public int ID { get; set; }
     public string Name { get; set  ; }
@@ -90,54 +88,45 @@ public abstract class Person
     }
     public virtual void GetPeriods(string batchName, string GradeName,string name,string email, string subject,string Role,DateTime from,DateTime to,Section section)
     {
-        
         if(name.Length <= 0  || email.Length <= 0)
         {
             if (subject.Length <= 0)
             {
-                List<Period> periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, section.ID);
-                if (periods.Count > 0)
+                section.Periods = Db.GetMeetingInfoWithoutNameandEmail(from, to, section.ID);
+                if (section.Periods.Count <= 0) return;
+                foreach (Period pe in section.Periods)
                 {
-                    foreach (Period pe in periods)
-                    {
-                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
-                    }
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
                 }
             }
             else
             {
-                List<Period> periods = Db.GetMeetingInfoSubjectWithoutNameandEmail(from, to, section.ID,subject);
-                if (periods.Count > 0)
+                section.Periods = Db.GetMeetingInfoSubjectWithoutNameandEmail(from, to, section.ID,subject);
+                if (section.Periods.Count <= 0) return;
+                foreach (Period pe in section.Periods)
                 {
-                    foreach (Period pe in periods)
-                    {
-                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
-                    }
-                }
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
+                } 
             }
         }
         else
         {
             if(subject.Length <= 0)
             {
-                List<Period> periods = Db.GetMeetingInfoWithNameandEmail(from, to, section.ID,name,email,Role);
-                if (periods.Count > 0)
+                section.Periods = Db.GetMeetingInfoWithNameandEmail(from, to, section.ID,name,email,Role);
+                if (section.Periods.Count <= 0) return;
+                foreach (Period pe in section.Periods)
                 {
-                    foreach (Period pe in periods)
-                    {
-                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
-                    }
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
                 }
             }
             else
             {
-                List<Period> periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, section.ID, name, email, Role,subject);
-                if (periods.Count > 0)
+                section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, section.ID, name, email, Role,subject);
+                if (section.Periods.Count <= 0) return;
+                foreach (Period pe in section.Periods)
                 {
-                    foreach (Period pe in periods)
-                    {
-                        CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
-                    }
+                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
                 }
             }
         }
@@ -149,5 +138,9 @@ public abstract class Person
         int daysInMonth = DateTime.DaysInMonth(from.Year, from.Month);
         DateTime to = new DateTime(from.Year, from.Month, daysInMonth,12,0,0);
         return (from, to);
+    }
+    public async Task SaveIntoExcel(string BatchName, string GradeName, Section section,Period periood,FileInfo filepath)
+    {
+        await Task.Run(()=> Excel.SaveExcelAsync(BatchName, GradeName, section, periood,filepath));
     }
 }

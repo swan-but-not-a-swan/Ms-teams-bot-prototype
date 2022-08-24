@@ -9,6 +9,7 @@ public static class CommandAnalyzer
     private static IAttendee Attendee { get; set; }
 
     private static List<Batch> Info = new List<Batch>();
+    private static List<Period> PeriodCache = new List<Period>();
 
     public delegate void makeMeeting(string BatchName, string GradeName, Section section, IEducator educator);
     public static event makeMeeting MakeMeeting;
@@ -22,6 +23,11 @@ public static class CommandAnalyzer
     public static event getAttendence GetAttendence;
     public delegate void getExcelPath();
     public static event getExcelPath GetExcelPath;
+    public delegate void getExcelFilePath(string batchName,string gradeName,Section section,Period period,IAttendee attendee);
+    public static event getExcelFilePath GetExcelFilePath;
+    private static string batchName = "";
+    private static string gradeName = "";
+    private static Section s = new();
     public static string Analyze(string command)
     {
         Validation();
@@ -29,6 +35,7 @@ public static class CommandAnalyzer
         string comment = "";
         string error = "Invalid Arugments or This command needs higher Authority to use" + Environment.NewLine;
         string nullerror = "The value doesn't exist or is duplicated values" + Environment.NewLine;
+        
         if (inputs[0].ToLower() == "-get" || inputs[0].ToLower() == "-g")
         {
             switch (inputs[1].ToLower())
@@ -82,6 +89,10 @@ public static class CommandAnalyzer
                         Section? section_ = grade_.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
                         if (section_ is null) return nullerror;
                         if(!Attendee.FurtherAnalyze(inputs, section_)) return nullerror;
+                        s.Name = section_.Name;
+                        PeriodCache = section_.Periods;
+                        batchName = batch_.Name;
+                        gradeName = grade_.Name;
                     }
                     else return error;
                     break;
@@ -155,7 +166,16 @@ public static class CommandAnalyzer
                     {
                         GlobalTools.Excel = false;
                     }
+                    if (int.TryParse(inputs[2],out int periodId))
+                    {
+                        Period? p = PeriodCache.Where(pe => pe.ID == periodId).FirstOrDefault();
+                        if(p is not null)
+                        {
+                            GetExcelFilePath?.Invoke(batchName,gradeName,s,p,Attendee);
+                        }
+                    }
                     break;
+
             }
         }
         return comment;
@@ -180,7 +200,7 @@ public static class CommandAnalyzer
     public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//refactored and tested
     {
         StringBuilder info = new StringBuilder();
-        info.AppendLine($"{period.StartTime.ToShortDateString()} {BatchName} {GradeName} {section.Name} " +
+        info.AppendLine($"ID : {period.ID} {period.StartTime.ToShortDateString()} {BatchName} {GradeName} {section.Name} " +
                     $"{period.Subject} {period.StartTime.ToShortTimeString()} - {period.EndTime.ToShortTimeString()}");
         foreach (var a in period.Attendees)
         {

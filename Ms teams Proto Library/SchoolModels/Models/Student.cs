@@ -29,10 +29,10 @@
     {
         if (subject.Length <= 0)
         {
-            List<Period> periods = Db.GetMeetingInfoWithNameandEmail(from, to, section.ID, Name, Email, "Student");
-            if (periods.Count > 0)
+            section.Periods = Db.GetMeetingInfoWithNameandEmail(from, to, section.ID, Name, Email, "Student");
+            if (section.Periods.Count > 0)
             {
-                foreach (Period pe in periods)
+                foreach (Period pe in section.Periods)
                 {
                     CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
                 }
@@ -40,10 +40,10 @@
         }
         else
         {
-            List<Period> periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, section.ID, Name, Email, Role, subject);
-            if (periods.Count > 0)
+            section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, section.ID, Name, Email, Role, subject);
+            if (section.Periods.Count > 0)
             {
-                foreach (Period pe in periods)
+                foreach (Period pe in section.Periods)
                 {
                     CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName,section, pe);
                 }

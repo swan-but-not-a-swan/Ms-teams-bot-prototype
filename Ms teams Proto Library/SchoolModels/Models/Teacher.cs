@@ -37,11 +37,12 @@
     }
     public async Task CreateMeeting(Batch batch, Section section, Period period)//refactored and tested
     {
-        List<Task> tasks = new List<Task>();
+        FileInfo filepath = new FileInfo(Path.Combine(GlobalTools.ExcelPath, $"{batch.Name} {batch.Grades[0].Name} {section.Teachers[0].Name}.xlsx"));
+        List <Task> tasks = new List<Task>();
         tasks.Add(Task.Run(() => Db.StorePeriod(period, section.ID)));
         tasks.Add(Task.Run(() => CommandAnalyzer.ShowMeetingInfoOnMessageForm(batch.Name, batch.Grades[0].Name, section, period)));
         //CommandAnalyzer.ShowMeetingInfoOnMessageForm(batch.Name, batch.Grades[0].Name, section, period)
-        tasks.Add(Excel.SaveExcelAsync(batch.Name, batch.Grades[0].Name, section, period));
+        tasks.Add(Excel.SaveExcelAsync(batch.Name, batch.Grades[0].Name, section, period,filepath));
         await Task.WhenAll(tasks);
     }
 }
