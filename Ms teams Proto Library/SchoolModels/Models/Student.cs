@@ -50,4 +50,22 @@
             }
         }
     }
+    public List<string> GetAllCommands()
+    {
+        List<string> output = new List<string>();
+        output.Add("-Create Excel [PeriodId]");
+        output.Add("-Create Feedback");
+        output.Add("-Get Section");
+        output.Add("-Get Attendance");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Month_]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Month_]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role] [Month_]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role] [Month_]");
+        output.Add("-Get Help");
+        return output;
+    }
 }

@@ -20,11 +20,11 @@ Commands : (Commands are not case sensitive) Every Commands must start with a -
 
 -Create Meeting -> Create Meeting form will show in order to create a meeting (For teachers who teaches multiples classes in a multiple grades and batches)
 
--Create Excel [On/Off] -> Tells the program whether to automatically send the period date after meeting to excel or not (Administrator)
+-Create Excel [on/off] -> Tells the program whether to automatically send the period date after meeting to excel or not (Educator)
 
 -Create Excel [PeriodId] -> Puts the cached meeting information into excel file. (All 3 Roles)
 
--Create Feedback -> A feedback website will show in order to report bugs or give feedbacks to the developer
+-Create Feedback -> A feedback website will show in order to report bugs or give feedbacks to the developer. (All 3 Roles)
 
 -Get or -g
 

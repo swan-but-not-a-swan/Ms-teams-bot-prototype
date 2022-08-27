@@ -59,5 +59,27 @@
         }
         else throw new Exception();
     }
-    //public List<Period> 
+    public List<string> GetAllCommands()
+    {
+        List<string> output = new List<string>();
+        output.Add("-Create Batch [BatchName]");
+        output.Add("-Create Grade [BatchName] [GradeName]");
+        output.Add("-Create Section");
+        output.Add("-Create Tr [Name] [BatchName] [GradeName] [SectionName] [Email] [Subject]");
+        output.Add("-Create Excel [PeriodId]");
+        output.Add("-Create Feedback");
+        output.Add("-Get Grade [BatchName] [GradeName]");
+        output.Add("-Get Section [BatchName] [GradeName] [SectionName]");
+        output.Add("-Get Attendance");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Month_]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Month_]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role] [Month_]");
+        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role] [Month_]");
+        output.Add("-Get Help");
+        return output;
+    }
 }

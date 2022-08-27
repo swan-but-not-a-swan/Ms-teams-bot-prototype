@@ -3,7 +3,6 @@ public partial class MessageForm : Form
 {
     private MeetingForm meetingForm = new MeetingForm();
     string command;
-    List<string> commands = GlobalTools.GetAllCommands();
     private static IAttendee Attendee { get; set; }
     public MessageForm(IAttendee attendee)
     {
@@ -22,7 +21,7 @@ public partial class MessageForm : Form
         CommandAnalyzer.GetExcelPath += CommandAnalyzer_GetExcelPath;
         CommandAnalyzer.GetAttendence += CommandAnalyzer_GetAttendence;
         CommandAnalyzer.GetExcelFilePath += CommandAnalyzer_GetExcelFilePath;
-        intellisense.DataSource = GlobalTools.GetAllCommands();
+        intellisense.DataSource = Attendee.GetAllCommands();
     }
 
     private async void CommandAnalyzer_GetExcelFilePath(string BatchName,string GradeName,Section section, Period period, IAttendee attendee)
