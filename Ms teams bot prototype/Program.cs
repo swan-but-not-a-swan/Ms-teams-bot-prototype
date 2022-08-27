@@ -15,11 +15,11 @@ namespace Ms_teams_bot_prototype
             //string name = "Swan Sett Aung";
             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             //CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
-            CommandAnalyzer.ChooseMode(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
+            
             //CommandAnalyzer.ChooseMode(new Student(name, "swan@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             //CommandAnalyzer.ChooseMode(new Student(name, "Swan@ilbc.edu.mm", GlobalTools.GetDb(), GlobalTools.GetLocal()));
             //CommandAnalyzer.ChooseMode(new Administrator(name, " ", GlobalTools.GetDb(), GlobalTools.GetLocal()));
-            Application.Run(new MessageForm(name));
+            Application.Run(new MessageForm(new Teacher(name, "Trmoe@icloud.com", GlobalTools.GetDb(), GlobalTools.GetLocal())));
         }
     }
 }

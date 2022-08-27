@@ -4,14 +4,17 @@ public partial class MessageForm : Form
     private MeetingForm meetingForm = new MeetingForm();
     string command;
     List<string> commands = GlobalTools.GetAllCommands();
-    public MessageForm(string name)
+    private static IAttendee Attendee { get; set; }
+    public MessageForm(IAttendee attendee)
     {
         InitializeComponent();
-        label1.Text = name;
+        label1.Text = attendee.Name;
+        Attendee = attendee;
         WireUpForm();
     }
     private void WireUpForm()
     {
+        CommandAnalyzer.ChooseMode(Attendee);
         CommandAnalyzer.ShowText += CommandAnalyzer_ShowText;
         CommandAnalyzer.CreateSection += CommandAnalyzer_CreateSection;
         CommandAnalyzer.MakeMeeting += CommandAnalyzer_MakeMeeting1;
@@ -96,8 +99,8 @@ public partial class MessageForm : Form
         messageShowerBox.Text += cwa + Environment.NewLine;
         if (cwa.StartsWith("-"))
         {
-            cwa = CommandAnalyzer.Analyze(cwa);
-            if(command.Length > 0)
+            cwa = CommandAnalyzer.Analyze(Attendee,cwa);
+            if(cwa.Length > 0)
             {
                 messageShowerBox.Text += cwa + Environment.NewLine;
             }
@@ -125,7 +128,7 @@ public partial class MessageForm : Form
     }
 
     private void intellisensetextChanged(object sender, EventArgs e)
-   {
+    {
         command = intellisense.Text;
         if(!intellisense.Text.StartsWith("-"))
         {

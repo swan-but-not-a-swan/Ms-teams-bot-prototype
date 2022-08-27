@@ -28,9 +28,8 @@ public static class CommandAnalyzer
     private static string batchName = "";
     private static string gradeName = "";
     private static Section s = new();
-    public static string Analyze(string command)
+    public static string Analyze(IAttendee attendee,string command)
     {
-        Validation();
         string[] inputs = command.Trim().Split(" ");
         string comment = "";
         string error = "Invalid Arugments or This command needs higher Authority to use" + Environment.NewLine;
@@ -180,12 +179,6 @@ public static class CommandAnalyzer
             }
         }
         return comment;
-    }
-    public static void Validation()//refactored and tested
-    {
-        if (Executive is null && Educator is null && Student is null) throw new Exception("No modes are selected");
-        if ((Executive is not null && Educator is not null) || (Educator is not null && Student is not null) || (Executive is not null && Student is not null))
-            throw new Exception("Two modes are selected");
     }
     public static void ChooseMode(IAttendee person)//refactored and tested
     {
