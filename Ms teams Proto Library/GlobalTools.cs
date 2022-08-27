@@ -4,6 +4,7 @@ public static class GlobalTools
 {
     public static bool Excel = false;
     public static string ExcelPath { get; set; }
+    public const string ReadMeFilePath = @"C:\Users\acer\source\repos\Ms teams bot prototype\Documentation.md";
     public static bool ValidateData(string Name, string Email)
     {
         if (Name.Length <= 0) return false;

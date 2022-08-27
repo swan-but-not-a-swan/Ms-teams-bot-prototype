@@ -96,7 +96,8 @@ public static class CommandAnalyzer
                     }
                     else return error;
                     break;
-                default:
+                case "help":
+                    ShowTextFromDocumentation();
                     break;
             }
         }
@@ -196,6 +197,16 @@ public static class CommandAnalyzer
         if (person is Administrator a)
             Executive = a;
         Info = person.GetInfo();//gets info
+    }
+    private static void ShowTextFromDocumentation()
+    {
+         var lines = File.ReadAllLines(GlobalTools.ReadMeFilePath);
+         StringBuilder text = new();
+         for(int i = 0; i<lines.Length; i++)
+         {
+            text.AppendLine(lines[i]);
+         }
+        ShowText?.Invoke(text.ToString());
     }
     public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//refactored and tested
     {
