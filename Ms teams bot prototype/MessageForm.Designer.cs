@@ -33,6 +33,7 @@
             this.sendButton = new System.Windows.Forms.Button();
             this.messageShowerBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.intellisense = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // messageBox
@@ -43,8 +44,9 @@
             this.messageBox.Multiline = true;
             this.messageBox.Name = "messageBox";
             this.messageBox.PlaceholderText = "Type here";
-            this.messageBox.Size = new System.Drawing.Size(795, 41);
+            this.messageBox.Size = new System.Drawing.Size(802, 41);
             this.messageBox.TabIndex = 4;
+            this.messageBox.TextChanged += new System.EventHandler(this.messageBox_TextChanged);
             // 
             // sendButton
             // 
@@ -66,6 +68,7 @@
             // 
             // messageShowerBox
             // 
+            this.messageShowerBox.AcceptsTab = true;
             this.messageShowerBox.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.messageShowerBox.Location = new System.Drawing.Point(3, 45);
             this.messageShowerBox.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
@@ -76,6 +79,7 @@
             this.messageShowerBox.Size = new System.Drawing.Size(932, 415);
             this.messageShowerBox.TabIndex = 6;
             this.messageShowerBox.TabStop = false;
+            this.messageShowerBox.TextChanged += new System.EventHandler(this.messageShowerBox_TextChanged);
             // 
             // label1
             // 
@@ -91,6 +95,21 @@
             this.label1.Text = "Get Attendance";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // intellisense
+            // 
+            this.intellisense.DropDownWidth = 850;
+            this.intellisense.Enabled = false;
+            this.intellisense.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.intellisense.FormattingEnabled = true;
+            this.intellisense.Location = new System.Drawing.Point(2, 467);
+            this.intellisense.MaxDropDownItems = 4;
+            this.intellisense.Name = "intellisense";
+            this.intellisense.Size = new System.Drawing.Size(801, 38);
+            this.intellisense.TabIndex = 54;
+            this.intellisense.Visible = false;
+            this.intellisense.SelectedIndexChanged += new System.EventHandler(this.intellisense_SelectedIndexChanged);
+            this.intellisense.TextChanged += new System.EventHandler(this.intellisensetextChanged);
+            // 
             // MessageForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -98,6 +117,7 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(932, 514);
+            this.Controls.Add(this.intellisense);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.messageBox);
             this.Controls.Add(this.sendButton);
@@ -117,5 +137,6 @@
         private Button sendButton;
         private TextBox messageShowerBox;
         private Label label1;
+        private ComboBox intellisense;
     }
 }

@@ -2,6 +2,8 @@
 public partial class MessageForm : Form
 {
     private MeetingForm meetingForm = new MeetingForm();
+    string command;
+    List<string> commands = GlobalTools.GetAllCommands();
     public MessageForm(string name)
     {
         InitializeComponent();
@@ -17,6 +19,7 @@ public partial class MessageForm : Form
         CommandAnalyzer.GetExcelPath += CommandAnalyzer_GetExcelPath;
         CommandAnalyzer.GetAttendence += CommandAnalyzer_GetAttendence;
         CommandAnalyzer.GetExcelFilePath += CommandAnalyzer_GetExcelFilePath;
+        intellisense.DataSource = GlobalTools.GetAllCommands();
     }
 
     private async void CommandAnalyzer_GetExcelFilePath(string BatchName,string GradeName,Section section, Period period, IAttendee attendee)
@@ -79,19 +82,68 @@ public partial class MessageForm : Form
     }
     private void sendButton_Click(object sender, EventArgs e)
     {
-        string command = messageBox.Text;
-        messageBox.Text = "";
-        messageShowerBox.Text += command + Environment.NewLine;
-        if (command.StartsWith("-"))
+        string cwa = "";
+        if(messageBox.Enabled == true)
         {
-            command = CommandAnalyzer.Analyze(command);
+            cwa = messageBox.Text;
+            messageBox.Text = "";
+        }
+        else if(intellisense.Enabled == true)
+        {
+            cwa = intellisense.Text;
+            intellisense.Text = "";
+        }
+        messageShowerBox.Text += cwa + Environment.NewLine;
+        if (cwa.StartsWith("-"))
+        {
+            cwa = CommandAnalyzer.Analyze(cwa);
             if(command.Length > 0)
             {
-                messageShowerBox.Text += command + Environment.NewLine;
+                messageShowerBox.Text += cwa + Environment.NewLine;
             }
         }
+        messageShowerBox.SelectionStart = messageShowerBox.Text.Length;
+        messageShowerBox.ScrollToCaret();
     }
     private void messageFormLabel_Click(object sender, EventArgs e)
     {
+    }
+
+    private void messageBox_TextChanged(object sender, EventArgs e)
+    {
+        command = messageBox.Text;
+        if(messageBox.Text.StartsWith("-"))
+        {
+            messageBox.Enabled = false;
+            messageBox.Visible = false;
+            intellisense.Enabled = true;
+            intellisense.Visible = true;
+            intellisense.Text = messageBox.Text;
+            intellisense.Focus();
+            intellisense.SelectionStart = intellisense.Text.Length;         
+        }
+    }
+
+    private void intellisensetextChanged(object sender, EventArgs e)
+   {
+        command = intellisense.Text;
+        if(!intellisense.Text.StartsWith("-"))
+        {
+            messageBox.Enabled = true;
+            messageBox.Visible = true;
+            intellisense.Enabled = false;
+            intellisense.Visible = false;
+            messageBox.Text = intellisense.Text;
+        }
+    }
+
+    private void intellisense_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void messageShowerBox_TextChanged(object sender, EventArgs e)
+    {
+
     }
 }
