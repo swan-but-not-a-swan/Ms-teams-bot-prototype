@@ -74,10 +74,14 @@
                 bool two = email.Text.Length <= 0 || (email.Text.Contains("@") == false);
                 if (one == two)
                 {
-                    Batch b = batch;
-                    b.Grades[0] = grade;
-                    b.Grades[0].Sections[0] = section;
                     Attendee.GetPeriods(batch.Name,grade.Name,name.Text, email.Text, subjectComboBox.Text, roleComboBox.Text, fromDateTime.Value, toDataTime.Value, section);
+                    if(section.Periods.Count >= 0)
+                    {
+                        foreach (Period pe in section.Periods)
+                        {
+                            GlobalTools.ShowMeetingInfoOnMessageForm(batch.Name, grade.Name, section, pe);
+                        }
+                    }
                     this.Close();
                 }
                 else MessageBox.Show("Either name or email value needed");

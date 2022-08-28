@@ -25,30 +25,41 @@
         }
         return batches;
     }
-    public override void GetPeriods(string batchName, string GradeName, string name , string email, string subject, string Role, DateTime from, DateTime to, Section section)
+    public override bool FurtherAnalyze(string[] inputs, Section section)
     {
-        if (subject.Length <= 0)
+        switch (inputs.Length)
         {
-            section.Periods = Db.GetMeetingInfoWithNameandEmail(from, to, section.ID, Name, Email, "Student");
-            if (section.Periods.Count > 0)
-            {
-                foreach (Period pe in section.Periods)
+            case 5: //-g attendance Til Secondary2 F
+                section.Periods = Db.GetMeetingInfoWithNameandEmail(DateTime.Today, DateTime.Now, section.ID,Name,Email,"Student");
+                break;
+            case 6: //-g attendance Til Secondary2 F August_, -g attendance Til Secondary2 F Science
+                if (inputs[5].EndsWith("_"))
                 {
-                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName, section, pe);
+                    try
+                    {
+                        var d = GetMonthStartAndEnd(inputs[5]);
+                        section.Periods = Db.GetMeetingInfoWithNameandEmail(d.from, d.to, section.ID, Name, Email, "Student");
+                    }
+                    catch { return false; }
                 }
-            }
-        }
-        else
-        {
-            section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(from, to, section.ID, Name, Email, Role, subject);
-            if (section.Periods.Count > 0)
-            {
-                foreach (Period pe in section.Periods)
+                else
                 {
-                    CommandAnalyzer.ShowMeetingInfoOnMessageForm(batchName, GradeName,section, pe);
+                    section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(DateTime.Today, DateTime.Now, section.ID, inputs[5], Name, Email, "Student");
                 }
-            }
+                break;
+            case 7: //-g attendance Til Secondary2 F Science August_
+                if (inputs[6].EndsWith("_"))
+                {
+                    try
+                    {
+                        var d = GetMonthStartAndEnd(inputs[6]);
+                        section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(d.from, d.to, section.ID, inputs[5], Name, Email, "Student");
+                    }
+                    catch { return false; }
+                }
+                break;
         }
+        return true;
     }
     public List<string> GetAllCommands()
     {
@@ -59,12 +70,8 @@
         output.Add("-Get Attendance");
         output.Add("-Get Attendance [BatchName] [GradeName] [SectionName]");
         output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role]");
         output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Month_]");
         output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Month_]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role] [Month_]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role] [Month_]");
         output.Add("-Get Help");
         return output;
     }

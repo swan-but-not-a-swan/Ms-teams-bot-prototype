@@ -9,12 +9,9 @@ public static class CommandAnalyzer
     private static IAttendee Attendee { get; set; }
 
     private static List<Batch> Info = new List<Batch>();
-    private static List<Period> PeriodCache = new List<Period>();
 
     public delegate void makeMeeting(string BatchName, string GradeName, Section section, IEducator educator);
     public static event makeMeeting MakeMeeting;
-    public delegate void showText(string comment);
-    public static event showText ShowText;
     public delegate void createSection(List<Batch> batches, IExcuetive excuetive);
     public static event createSection CreateSection;
     public delegate void createMeeting(List<Batch> batches, IEducator educator);
@@ -46,12 +43,12 @@ public static class CommandAnalyzer
                     Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
                     if (grade is null) return nullerror;
                     Executive.GetFullSections(grade);
-                    ShowGradeInfoOnMeetingForm(inputs[2], grade);
+                    GlobalTools.ShowGradeInfoOnMeetingForm(inputs[2], grade);
                     break;
                 case "section":
                     if (Attendee is Student)
                     {
-                        ShowSectionInfoOnMeetingForm(Info[0].Name, Info[0].Grades[0].Name, Info[0].Grades[0].Sections[0]);
+                        GlobalTools.ShowSectionInfoOnMeetingForm(Info[0].Name, Info[0].Grades[0].Name, Info[0].Grades[0].Sections[0]);
                     }
                     else 
                     {
@@ -66,7 +63,7 @@ public static class CommandAnalyzer
                             {
                                 Section? section_ = grade__.Sections.FirstOrDefault(x => x.Name == sectionName__);//get one section
                                 if (section_ is null) return nullerror;
-                                ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], Attendee.GetFullSection(grade__.ID, section_));
+                                GlobalTools.ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], Attendee.GetFullSection(grade__.ID, section_));
                             }
                             catch { return error; }
                         }
@@ -87,16 +84,20 @@ public static class CommandAnalyzer
                     {
                         Section? section_ = grade_.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
                         if (section_ is null) return nullerror;
-                        if(!Attendee.FurtherAnalyze(inputs, section_)) return nullerror;
+                        if(!Attendee.FurtherAnalyze(inputs, section_) || section_.Periods.Count <= 0) return nullerror;
+                        foreach (Period pe in section_.Periods)
+                        {
+                            GlobalTools.ShowMeetingInfoOnMessageForm(batch_.Name, grade_.Name, section_, pe);
+                        }
                         s.Name = section_.Name;
-                        PeriodCache = section_.Periods;
+                        s.Periods = section_.Periods;
                         batchName = batch_.Name;
                         gradeName = grade_.Name;
                     }
                     else return error;
                     break;
                 case "help":
-                    ShowTextFromDocumentation();
+                    GlobalTools.ShowTextFromDocumentation();
                     break;
             }
         }
@@ -155,7 +156,7 @@ public static class CommandAnalyzer
                     }
                     else return error;
                     break;
-                case "excel"://refactored and tested
+                case "excel":
                     if (inputs.Length < 2) return error;
                     if (inputs[2].ToLower() == "on")
                     {
@@ -168,11 +169,9 @@ public static class CommandAnalyzer
                     }
                     if (int.TryParse(inputs[2],out int periodId))
                     {
-                        Period? p = PeriodCache.Where(pe => pe.ID == periodId).FirstOrDefault();
-                        if(p is not null)
-                        {
-                            GetExcelFilePath?.Invoke(batchName,gradeName,s,p,Attendee);
-                        }
+                        Period? p = s.Periods.Where(pe => pe.ID == periodId).FirstOrDefault();
+                        if (p is null) break;
+                        GetExcelFilePath?.Invoke(batchName,gradeName,s,p,Attendee);
                     }
                     break;
 
@@ -190,53 +189,6 @@ public static class CommandAnalyzer
         if (person is Administrator a)
             Executive = a;
         Info = person.GetInfo();//gets info
-    }
-    private static void ShowTextFromDocumentation()
-    {
-         var lines = File.ReadAllLines(GlobalTools.ReadMeFilePath);
-         StringBuilder text = new();
-         for(int i = 0; i<lines.Length; i++)
-         {
-            text.AppendLine(lines[i]);
-         }
-        ShowText?.Invoke(text.ToString());
-    }
-    public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//refactored and tested
-    {
-        StringBuilder info = new StringBuilder();
-        info.AppendLine($"ID : {period.ID} {period.StartTime.ToShortDateString()} {BatchName} {GradeName} {section.Name} " +
-                    $"{period.Subject} {period.StartTime.ToShortTimeString()} - {period.EndTime.ToShortTimeString()}");
-        foreach (var a in period.Attendees)
-        {
-            info.AppendLine($"ID:{a.ID} Name:{a.Name} JoinTime:{(a.JoinTime.HasValue ? a.JoinTime.GetValueOrDefault().ToShortTimeString() : "null")} " +
-                $"LeaveTime:{(a.LeaveTime.HasValue ? a.LeaveTime.GetValueOrDefault().ToShortTimeString() : "null")}" +
-                $" Duration:{a.Duration.GetValueOrDefault().Hours}:{a.Duration.GetValueOrDefault().Minutes}:{a.Duration.GetValueOrDefault().Seconds} Status:{a.Status}");
-        }
-        ShowText?.Invoke(info.ToString());
-    }
-    public static void ShowGradeInfoOnMeetingForm(string BatchName,Grade grade)
-    {
-        StringBuilder info = new StringBuilder();
-        info.AppendLine($"{BatchName} {grade.Name}");
-        foreach(var s in grade.Sections)
-        {
-            info.AppendLine($"{s.Name} Class, Teachers : {s.Teachers.Count} Students : {s.Students.Count}");
-        }
-        ShowText?.Invoke(info.ToString());
-    }
-    public static void ShowSectionInfoOnMeetingForm(string BatchName,string gradeName, Section section)
-    {
-        StringBuilder info = new StringBuilder();
-        info.AppendLine($"{BatchName} {gradeName} {section.Name}");
-        foreach (var t in section.Teachers)
-        {
-            info.AppendLine($"Name : {t.Name}, Email : {t.Email}, Subject : {t.Subject}");
-        }
-        foreach (var s in section.Students)
-        {
-            info.AppendLine($"Name : {s.Name}, Email : {s.Email}");
-        }
-        ShowText?.Invoke(info.ToString());
     }
 }
 

@@ -14,7 +14,7 @@ public partial class MessageForm : Form
     private void WireUpForm()
     {
         CommandAnalyzer.ChooseMode(Attendee);
-        CommandAnalyzer.ShowText += CommandAnalyzer_ShowText;
+        GlobalTools.ShowText += GlobalTools_ShowText;
         CommandAnalyzer.CreateSection += CommandAnalyzer_CreateSection;
         CommandAnalyzer.MakeMeeting += CommandAnalyzer_MakeMeeting1;
         CommandAnalyzer.CreateMeeting += CommandAnalyzer_CreateMeeting;
@@ -32,7 +32,14 @@ public partial class MessageForm : Form
             if(openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string fileInfo = openFileDialog.FileName;
-                await attendee.SaveIntoExcel(BatchName, GradeName, section,period,new FileInfo(fileInfo));
+                try
+                {
+                    await attendee.SaveIntoExcel(BatchName, GradeName, section, period, new FileInfo(fileInfo));
+                }
+                catch
+                {
+                    MessageBox.Show("Additional Excel file opened");
+                }
             }
         }
     }
@@ -70,11 +77,11 @@ public partial class MessageForm : Form
         CreateSection cs = new CreateSection(batches, excuetive);
         cs.Show();
     }
-    private void CommandAnalyzer_ShowText(string comment)//refactored and tested
+    private void GlobalTools_ShowText(string comment)
     {
         if (messageShowerBox.InvokeRequired)
         {
-            Action safeWrite = delegate { CommandAnalyzer_ShowText(comment); };
+            Action safeWrite = delegate { GlobalTools_ShowText(comment); };
             messageShowerBox.Invoke(safeWrite);
         }
         else messageShowerBox.Text += comment + Environment.NewLine;

@@ -2,22 +2,17 @@
 
 public static class GlobalTools
 {
-    public static bool Excel = false;
+    public static bool Excel { get; set; } = false;
     public static string ExcelPath { get; set; }
     public const string ReadMeFilePath = @"C:\Users\acer\source\repos\Ms teams bot prototype\Documentation.md";
+
+    public delegate void showText(string comment);
+    public static event showText ShowText;
     public static bool ValidateData(string Name, string Email)
     {
         if (Name.Length <= 0) return false;
         if (Email.Length <= 0 || (Email.EndsWith("@ilbc.edu.mm") == false)) return false;
         return true;
-    }
-    public static IDBconnection GetDb()
-    {
-        return new SqlConnector();
-    }
-    public static ILocalConnection GetLocal()
-    {
-        return new ExcelConnector();
     }
     public static string GetSpacedName(string name)
     {
@@ -32,31 +27,51 @@ public static class GlobalTools
         }
         return sb.ToString().Trim();
     }
-    public static List<string> GetAllCommands()
+    public static void ShowTextFromDocumentation()
     {
-        List<string> output = new List<string>();
-        output.Add("-Create Batch [BatchName]");
-        output.Add("-Create Grade [BatchName] [GradeName]");
-        output.Add("-Create Section");
-        output.Add("-Create Tr [Name] [BatchName] [GradeName] [SectionName] [Email] [Subject]");
-        output.Add("-Create Meeting");
-        output.Add("-Create Meeting [SectionName]");
-        output.Add("-Create Excel [On/Off]");
-        output.Add("-Create Excel [PeriodId]");
-        output.Add("-Create Feedback");
-        output.Add("-Get Grade [BatchName] [GradeName]");
-        output.Add("-Get Section [BatchName] [GradeName] [SectionName]");
-        output.Add("-Get Section");
-        output.Add("-Get Attendance");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Month_]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Month_]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Name] [Email] [Role] [Month_]");
-        output.Add("-Get Attendance [BatchName] [GradeName] [SectionName] [Subject] [Name] [Email] [Role] [Month_]");
-        output.Add("-Get Help");
-        return output;
+        var lines = File.ReadAllLines(GlobalTools.ReadMeFilePath);
+        StringBuilder text = new();
+        for (int i = 0; i < lines.Length; i++)
+        {
+            text.AppendLine(lines[i]);
+        }
+        ShowText?.Invoke(text.ToString());
+    }
+    public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//refactored and tested
+    {
+        StringBuilder info = new StringBuilder();
+        info.AppendLine($"ID : {period.ID} {period.StartTime.ToShortDateString()} {BatchName} {GradeName} {section.Name} " +
+                    $"{period.Subject} {period.StartTime.ToShortTimeString()} - {period.EndTime.ToShortTimeString()}");
+        foreach (var a in period.Attendees)
+        {
+            info.AppendLine($"ID:{a.ID} Name:{a.Name} JoinTime:{(a.JoinTime.HasValue ? a.JoinTime.GetValueOrDefault().ToShortTimeString() : "null")} " +
+                $"LeaveTime:{(a.LeaveTime.HasValue ? a.LeaveTime.GetValueOrDefault().ToShortTimeString() : "null")}" +
+                $" Duration:{a.Duration.GetValueOrDefault().Hours}:{a.Duration.GetValueOrDefault().Minutes}:{a.Duration.GetValueOrDefault().Seconds} Status:{a.Status}");
+        }
+        ShowText?.Invoke(info.ToString());
+    }
+    public static void ShowGradeInfoOnMeetingForm(string BatchName, Grade grade)
+    {
+        StringBuilder info = new StringBuilder();
+        info.AppendLine($"{BatchName} {grade.Name}");
+        foreach (var s in grade.Sections)
+        {
+            info.AppendLine($"{s.Name} Class, Teachers : {s.Teachers.Count} Students : {s.Students.Count}");
+        }
+        ShowText?.Invoke(info.ToString());
+    }
+    public static void ShowSectionInfoOnMeetingForm(string BatchName, string gradeName, Section section)
+    {
+        StringBuilder info = new StringBuilder();
+        info.AppendLine($"{BatchName} {gradeName} {section.Name}");
+        foreach (var t in section.Teachers)
+        {
+            info.AppendLine($"Name : {t.Name}, Email : {t.Email}, Subject : {t.Subject}");
+        }
+        foreach (var s in section.Students)
+        {
+            info.AppendLine($"Name : {s.Name}, Email : {s.Email}");
+        }
+        ShowText?.Invoke(info.ToString());
     }
 }
