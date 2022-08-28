@@ -1,7 +1,4 @@
-﻿
-using System.Text;
-
-public static class CommandAnalyzer
+﻿public static class CommandAnalyzer
 {
     private static IExcuetive Executive { get; set; }
     private static IEducator Educator { get; set; }
@@ -10,6 +7,8 @@ public static class CommandAnalyzer
 
     private static List<Batch> Info = new List<Batch>();
 
+    static string error = "Invalid Arugments or This command needs higher Authority to use" + Environment.NewLine;
+    static string nullerror = "The value doesn't exist or is duplicated values" + Environment.NewLine;
     public delegate void makeMeeting(string BatchName, string GradeName, Section section, IEducator educator);
     public static event makeMeeting MakeMeeting;
     public delegate void createSection(List<Batch> batches, IExcuetive excuetive);
@@ -29,8 +28,7 @@ public static class CommandAnalyzer
     {
         string[] inputs = command.Trim().Split(" ");
         string comment = "";
-        string error = "Invalid Arugments or This command needs higher Authority to use" + Environment.NewLine;
-        string nullerror = "The value doesn't exist or is duplicated values" + Environment.NewLine;
+      
         
         if (inputs[0].ToLower() == "-get" || inputs[0].ToLower() == "-g")
         {
@@ -38,12 +36,10 @@ public static class CommandAnalyzer
             {
                 case "grade":
                     if (Executive is null || inputs.Length < 4) return error;
-                    Batch? batch = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                    if (batch is null) return nullerror;
-                    Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade
-                    if (grade is null) return nullerror;
-                    Executive.GetFullSections(grade);
-                    GlobalTools.ShowGradeInfoOnMeetingForm(inputs[2], grade);
+                    var g = GetGrade(inputs[2], inputs[3]);
+                    if (!g.status) return nullerror;
+                    Executive.GetFullSections(g.grade);
+                    GlobalTools.ShowGradeInfoOnMeetingForm(inputs[2], g.grade);
                     break;
                 case "section":
                     if (Attendee is Student)
@@ -53,17 +49,15 @@ public static class CommandAnalyzer
                     else 
                     {
                         if (inputs.Length < 4) return error;
-                        Batch? batch__ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                        if (batch__ is null) return nullerror;
-                        Grade? grade__ = batch__.Grades.FirstOrDefault(x => x.Name == inputs[3]);//get one grade, change here
-                        if (grade__ is null) return nullerror;
-                        if(char.TryParse(inputs[4], out char sectionName__))
+                        var g_ = GetGrade(inputs[2], inputs[3]);
+                        if (!g_.status) return nullerror;
+                        if (char.TryParse(inputs[4], out char sectionName__))
                         {
                             try
                             {
-                                Section? section_ = grade__.Sections.FirstOrDefault(x => x.Name == sectionName__);//get one section
+                                Section? section_ = g_.grade.Sections.FirstOrDefault(x => x.Name == sectionName__);//get one section
                                 if (section_ is null) return nullerror;
-                                GlobalTools.ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], Attendee.GetFullSection(grade__.ID, section_));
+                                GlobalTools.ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], Attendee.GetFullSection(g_.grade.ID, section_));
                             }
                             catch { return error; }
                         }
@@ -76,23 +70,21 @@ public static class CommandAnalyzer
                         GetAttendence?.Invoke(Info, Attendee);
                         break;
                     }
-                    Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[2]);//get one batch
-                    if (batch_ is null) return nullerror;
-                    Grade? grade_ = batch_.Grades.FirstOrDefault(x => x.Name == inputs[3]);
-                    if (grade_ is null) return nullerror;
+                    var g__ = GetGrade(inputs[2], inputs[3]);
+                    if (!g__.status) return nullerror;
                     if (char.TryParse(inputs[4], out char sectionName))
                     {
-                        Section? section_ = grade_.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
+                        Section? section_ = g__.grade.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
                         if (section_ is null) return nullerror;
                         if(!Attendee.FurtherAnalyze(inputs, section_) || section_.Periods.Count <= 0) return nullerror;
                         foreach (Period pe in section_.Periods)
                         {
-                            GlobalTools.ShowMeetingInfoOnMessageForm(batch_.Name, grade_.Name, section_, pe);
+                            GlobalTools.ShowMeetingInfoOnMessageForm(inputs[2], inputs[3], section_, pe);
                         }
                         s.Name = section_.Name;
                         s.Periods = section_.Periods;
-                        batchName = batch_.Name;
-                        gradeName = grade_.Name;
+                        batchName = inputs[2];
+                        gradeName = inputs[3];
                     }
                     else return error;
                     break;
@@ -143,13 +135,11 @@ public static class CommandAnalyzer
                     break;
                 case "tr":
                     if (Executive is null || inputs.Length < 8) return error;  
-                    Batch? batch_ = Info.FirstOrDefault(x => x.Name == inputs[3]);//get one batch
-                    if (batch_ is null) return nullerror;
-                    Grade? grade = batch_.Grades.FirstOrDefault(x => x.Name == inputs[4]);//get one grade
-                    if (grade is null) return nullerror;
+                    var g___ = GetGrade(inputs[3], inputs[4]);
+                    if (!g___.status) return nullerror;
                     if (char.TryParse(inputs[5], out char sectionName_))
                     {
-                        Section? section = grade.Sections.FirstOrDefault(x => x.Name == sectionName_);
+                        Section? section = g___.grade.Sections.FirstOrDefault(x => x.Name == sectionName_);
                         if (section is null) return nullerror;
                         try { Executive.CreateTeacher(inputs[2], inputs[7], inputs[6], section.ID); }
                         catch { return nullerror; }
@@ -173,13 +163,84 @@ public static class CommandAnalyzer
                         if (p is null) break;
                         GetExcelFilePath?.Invoke(batchName,gradeName,s,p,Attendee);
                     }
-                    break;
-
+                    break; 
             }
         }
         return comment;
     }
-    public static void ChooseMode(IAttendee person)//refactored and tested
+    private static string CreateCommand(string[] inputs)
+    {
+        switch (inputs[1].ToLower())
+        {
+            case "grade":
+                if (Executive is null || inputs.Length < 4) return error;
+                var g = GetGrade(inputs[2], inputs[3]);
+                if (!g.status) return nullerror;
+                Executive.GetFullSections(g.grade);
+                GlobalTools.ShowGradeInfoOnMeetingForm(inputs[2], g.grade);
+                break;
+            case "section":
+                if (Attendee is Student)
+                {
+                    GlobalTools.ShowSectionInfoOnMeetingForm(Info[0].Name, Info[0].Grades[0].Name, Info[0].Grades[0].Sections[0]);
+                }
+                else
+                {
+                    if (inputs.Length < 4) return error;
+                    var g_ = GetGrade(inputs[2], inputs[3]);
+                    if (!g_.status) return nullerror;
+                    if (char.TryParse(inputs[4], out char sectionName__))
+                    {
+                        try
+                        {
+                            Section? section_ = g_.grade.Sections.FirstOrDefault(x => x.Name == sectionName__);//get one section
+                            if (section_ is null) return nullerror;
+                            GlobalTools.ShowSectionInfoOnMeetingForm(inputs[2], inputs[3], Attendee.GetFullSection(g_.grade.ID, section_));
+                        }
+                        catch { return error; }
+                    }
+                    else return error;
+                }
+                break;
+            case "attendance":
+                if (inputs.Length < 5)
+                {
+                    GetAttendence?.Invoke(Info, Attendee);
+                    break;
+                }
+                var g__ = GetGrade(inputs[2], inputs[3]);
+                if (!g__.status) return nullerror;
+                if (char.TryParse(inputs[4], out char sectionName))
+                {
+                    Section? section_ = g__.grade.Sections.FirstOrDefault(x => x.Name == sectionName);//get one section
+                    if (section_ is null) return nullerror;
+                    if (!Attendee.FurtherAnalyze(inputs, section_) || section_.Periods.Count <= 0) return nullerror;
+                    foreach (Period pe in section_.Periods)
+                    {
+                        GlobalTools.ShowMeetingInfoOnMessageForm(inputs[2], inputs[3], section_, pe);
+                    }
+                    s.Name = section_.Name;
+                    s.Periods = section_.Periods;
+                    batchName = inputs[2];
+                    gradeName = inputs[3];
+                }
+                else return error;
+                break;
+            case "help":
+                GlobalTools.ShowTextFromDocumentation();
+                break;
+        }
+        return "";
+    }
+    public static (bool status,Grade grade) GetGrade(string batchName,string gradeName)
+    {
+        Batch? batch = Info.FirstOrDefault(x => x.Name == batchName);//get one batch
+        if (batch is null) return (false, new Grade()); 
+        Grade? grade = batch.Grades.FirstOrDefault(x => x.Name == gradeName);//get one grade
+        if (grade is null) return (false,new Grade());
+        return (true, grade);
+    }
+    public static void ChooseMode(IAttendee person)
     {
         Attendee = person; 
         if (person is Student s)

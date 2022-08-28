@@ -82,6 +82,7 @@
                             GlobalTools.ShowMeetingInfoOnMessageForm(batch.Name, grade.Name, section, pe);
                         }
                     }
+                    section.Periods.Clear();
                     this.Close();
                 }
                 else MessageBox.Show("Either name or email value needed");
