@@ -1,4 +1,4 @@
-﻿public class Student : Person, IAttendee, IStudent
+﻿public class Student : Person, IAttendee
 {
     public Student() { }
     public Student(string name, string email, IDBconnection db, ILocalConnection local)
@@ -9,28 +9,25 @@
         Excel = local;
     }
 
-    public override Section GetFullSection(int gradeId, Section section)
+    public List<Batch> GetInfo()//final tested
     {
-        throw new NotImplementedException();
-    }
-
-    public List<Batch> GetInfo()
-    {
-        List<Batch> batches = Db.GetBatchByStudentName(Name);
-        if (batches.Count <= 0 || batches.Count > 1) throw new Exception("This Student doesn't exist");
-        else
-        {
-            batches[0].Grades = Db.GetGradeByStudentNameandBatchId(Name, batches[0].ID);
-            batches[0].Grades[0].Sections = Db.GetSectionByStudentNameandGradeId(Name, batches[0].Grades[0].ID);
-        }
+        List<Batch> batches = Db.GetBatchByPerson(this);
+        if (batches.Count != 1) throw new Exception("This Student doesn't exist");
+        batches[0].Grades = Db.GetGradeByPersonandBatchId(this, batches[0].ID);
+        batches[0].Grades[0].Sections = Db.GetSectionByPersonandGradeId(this, batches[0].Grades[0].ID);
+        Db.GetPersonIntoSection(batches[0].Grades[0].Sections[0]);
         return batches;
     }
-    public override bool FurtherAnalyze(string[] inputs, Section section)
+    public Section GetFullSection(Section section)//final tested
+    {
+        throw new Exception();
+    }
+    public override bool FurtherAnalyze(string[] inputs, Section section)//final tested
     {
         switch (inputs.Length)
         {
             case 5: //-g attendance Til Secondary2 F
-                section.Periods = Db.GetMeetingInfoWithNameandEmail(DateTime.Today, DateTime.Now, section.ID,Name,Email,"Student");
+                GetPeriodsWithNameEmail(Name, Email, "", "Student", DateTime.Today, DateTime.Now, section);
                 break;
             case 6: //-g attendance Til Secondary2 F August_, -g attendance Til Secondary2 F Science
                 if (inputs[5].EndsWith("_"))
@@ -38,13 +35,13 @@
                     try
                     {
                         var d = GetMonthStartAndEnd(inputs[5]);
-                        section.Periods = Db.GetMeetingInfoWithNameandEmail(d.from, d.to, section.ID, Name, Email, "Student");
+                        GetPeriodsWithNameEmail(Name, Email, "", "Student", d.from, d.to, section);
                     }
                     catch { return false; }
                 }
                 else
                 {
-                    section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(DateTime.Today, DateTime.Now, section.ID, inputs[5], Name, Email, "Student");
+                    GetPeriodsWithNameEmail(Name, Email, inputs[5], "Student", DateTime.Today, DateTime.Now, section);
                 }
                 break;
             case 7: //-g attendance Til Secondary2 F Science August_
@@ -53,7 +50,7 @@
                     try
                     {
                         var d = GetMonthStartAndEnd(inputs[6]);
-                        section.Periods = Db.GetMeetingInfoSubjectWithNameandEmail(d.from, d.to, section.ID, inputs[5], Name, Email, "Student");
+                        GetPeriodsWithNameEmail(Name, Email, inputs[5], "Student", d.from, d.to, section);
                     }
                     catch { return false; }
                 }
@@ -61,7 +58,7 @@
         }
         return true;
     }
-    public List<string> GetAllCommands()
+    public List<string> GetAllCommands()//final tested
     {
         List<string> output = new List<string>();
         output.Add("-Create Excel [PeriodId]");

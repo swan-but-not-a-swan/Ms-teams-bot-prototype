@@ -58,7 +58,7 @@ Administrator and Teacher Role will the attendance of the entire class while the
 
 Notes#
 
-Names must not have space. Eg SwanSettAung.
+Names must not have space in messagebox. Eg SwanSettAung.
 Every month must be followed by underscore. Eg August_ .
 Every Teacher's email must have "Tr" in front of it . Eg. TrSwan@ilbc.edu.mm .
 Every email must have "@ilbc.edu.mm". Eg. SwanSettAung@ilbc.edu.mm .

@@ -2,40 +2,43 @@
 {
     public Subjects Subject { get; set; }
     public Teacher() { }
-    public Teacher(string name, string email, IDBconnection db, ILocalConnection local)//refactored and tested
+    public Teacher(string name, string email, IDBconnection db, ILocalConnection local)
     {
         Name = name;
         Email = email;
         Db = db;
         Excel = local;
     }
-    public List<Batch> GetInfo()//refactored and tested
+    public List<Batch> GetInfo()//final tested
     {
-        List<Batch> batches = Db.GetBatchByTeacherName(Name);
+        List<Batch> batches = Db.GetBatchByPerson(this);
         if (batches.Count <= 0) throw new Exception("This Tr doesn't exist");
-        else
+        foreach (Batch b in batches)
         {
-            foreach (Batch b in batches)
+            b.Grades = Db.GetGradeByPersonandBatchId(this, b.ID);//get grades that the tr teacher
+            foreach (var g in b.Grades)
             {
-                b.Grades = Db.GetGradeByTeacherNameandBatchId(Name, b.ID);//get grades that the tr teacher
-                foreach (var g in b.Grades)
+                g.Sections = Db.GetSectionByPersonandGradeId(this, g.ID);//get sections and students and a tr
+                foreach (Section s in g.Sections)
                 {
-                   g.Sections = Db.GetSectionByTeacherNameandGradeId(Name, g.ID);//get sections and students and a tr
-                   foreach (Section s in g.Sections)
-                   {
-                        s.Teachers.Add(Db.GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == Name));
-                        s.Students = Db.GetStudentsByClassId(s.ID);
-                   }
+                    s.Teachers.Add(Db.GetTeachersByClassId(s.ID).FirstOrDefault(t => t.Name == Name && t.Email == Email));
+                    s.Students = Db.GetStudentsByClassId(s.ID);
                 }
             }
         }
         return batches;
     }
-    public Teacher ShallowCopy()//refactored and tested
+    public Section GetFullSection(Section section)//final tested
+    {
+        Section output = new Section { ID = section.ID, Name = section.Name, Students = section.Students };
+        output.Teachers = Db.GetTeachersByClassId(section.ID);
+        return output;
+    }
+    public Teacher ShallowCopy()//final tested
     {
         return (Teacher)this.MemberwiseClone();
     }
-    public async Task CreateMeeting(Batch batch, Section section, Period period)//refactored and tested
+    public async Task CreateMeeting(Batch batch, Section section, Period period)//final tested
     {
         List <Task> tasks = new List<Task>();
         tasks.Add(Task.Run(() => Db.StorePeriod(period, section.ID)));
@@ -47,7 +50,7 @@
         }
         await Task.WhenAll(tasks);
     }
-    public List<string> GetAllCommands()
+    public List<string> GetAllCommands()//final tested
     {
         List<string> output = new List<string>();
         output.Add("-Create Meeting");

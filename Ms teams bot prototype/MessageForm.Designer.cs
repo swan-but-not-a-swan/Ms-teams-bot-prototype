@@ -79,7 +79,6 @@
             this.messageShowerBox.Size = new System.Drawing.Size(932, 415);
             this.messageShowerBox.TabIndex = 6;
             this.messageShowerBox.TabStop = false;
-            this.messageShowerBox.TextChanged += new System.EventHandler(this.messageShowerBox_TextChanged);
             // 
             // label1
             // 
@@ -107,7 +106,6 @@
             this.intellisense.Size = new System.Drawing.Size(801, 38);
             this.intellisense.TabIndex = 54;
             this.intellisense.Visible = false;
-            this.intellisense.SelectedIndexChanged += new System.EventHandler(this.intellisense_SelectedIndexChanged);
             this.intellisense.TextChanged += new System.EventHandler(this.intellisensetextChanged);
             // 
             // MessageForm
@@ -125,7 +123,6 @@
             this.MdiChildrenMinimizedAnchorBottom = false;
             this.Name = "MessageForm";
             this.Text = "MessageForm";
-            this.Load += new System.EventHandler(this.MessageForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -9,14 +9,14 @@ public partial class CreateSection : Form
     private List<IAttendee> person = new List<IAttendee>();
     private List<Teacher> teachers = new List<Teacher>();
     private List<Student> students = new List<Student>();
-    public CreateSection(List<Batch> batches, IExcuetive excuetive)//refactored and tested
+    public CreateSection(List<Batch> batches, IExcuetive excuetive)//final tested
     {
         InitializeComponent();
         Batches = batches;
         WireUpForm();
         Excuetive = excuetive;
     }
-    private void WireUpForm()//refactord and tested
+    private void WireUpForm()//final tested
     {
         batchComboBox.DataSource = Batches;
         batchComboBox.DisplayMember = "Name";
@@ -29,20 +29,24 @@ public partial class CreateSection : Form
         attendeesListBox.DataSource = membersBinding;
         attendeesListBox.DisplayMember = "Name";
     }
-    private void batchComboBox_SelectedIndexChanged(object sender, EventArgs e)//refactored and tested
+    private void batchComboBox_SelectedIndexChanged(object sender, EventArgs e)//final tested 
     {
         Batch batch = (Batch)batchComboBox.SelectedItem;
         gradeComboBox.DataSource = batch.Grades;
         if (gradeComboBox.Items.Count <= 0)
         {
-            gradeComboBox.DisplayMember = "";
+            gradeComboBox.Enabled = false;
+        }
+        else
+        {
+            gradeComboBox.Enabled = true;
         }
     }
-    private void addButton_Click(object sender, EventArgs e)
+    private void addButton_Click(object sender, EventArgs e)//final tested
     {
         bool validation = GlobalTools.ValidateData(nameValue.Text, emailValue.Text);
-        bool duplicateChecker = !person.Any(p => p.Name == nameValue.Text || p.Email == emailValue.Text);
-        if (validation && duplicateChecker )//value validation and duplication checker
+        bool duplicateChecker = !person.Any(p => p.Name.ToLower() == nameValue.Text.ToLower() || p.Email.ToLower() == emailValue.Text.ToLower());
+        if (validation && duplicateChecker)//value validation and duplication checker
         {
             if (role is Teacher)
             {
@@ -66,53 +70,44 @@ public partial class CreateSection : Form
         else MessageBox.Show("Invalid Input", "Input-Error");
         membersBinding.ResetBindings(false);
     }
-    private void roleComboBox_SelectedIndexChanged(object sender, EventArgs e)//refactored and tested
+    private void roleComboBox_SelectedIndexChanged(object sender, EventArgs e)//final tested
     {
         role = (IAttendee)roleComboBox.SelectedItem;
         if (role is Teacher)
         {
             subjectLabel.Visible = true;
             subjectComboBox.Visible = true;
-            formGroupBox.Name = "Create Teacher";
+            formGroupBox.Text = "Create Teacher";
         }
         if (role is Student)
         {
             subjectLabel.Visible = false;
             subjectComboBox.Visible = false;
-            formGroupBox.Name = "Create Student";
+            formGroupBox.Text = "Create Student";
         }
     }
-    private void deleteButton_Click(object sender, EventArgs e)//refactored and tested
+    private void deleteButton_Click(object sender, EventArgs e)//final tested
     {
         IAttendee p = (IAttendee)attendeesListBox.SelectedItem;
         person.Remove(p);
-        if (p is Teacher t)
-        {
-            teachers.Remove(t);
-        }
-        if (p is Student s)
-        {
-            students.Remove(s);
-        }
+        if (p is Teacher t) teachers.Remove(t);
+        if (p is Student s) students.Remove(s);
         membersBinding.ResetBindings(false);
     }
-    private void createSectionButton_Click(object sender, EventArgs e)
+    private void createSectionButton_Click(object sender, EventArgs e)//final tested
     {
         Grade grade = (Grade)gradeComboBox.SelectedItem;
         char.TryParse(sectionNameValue.Text, out char sectionName);
-        if (char.IsUpper(sectionName) && !grade.Sections.Any(s => s.Name == sectionName))//checking whether sectionName is in caps and checking for duplication
+        if (char.IsUpper(sectionName) && grade is not null && !grade.Sections.Any(s => s.Name == sectionName))//checking whether sectionName is in caps and checking for duplication
         {
             if (teachers.Count > 0 && students.Count > 0)//checking whether teacherList and studentsList have value
             {
-                Section section = new Section();
-                section.Name = sectionName;
-                section.Teachers = teachers;
-                section.Students = students;
+                Section section = new Section { Name = sectionName, Teachers = teachers, Students = students };
                 Excuetive.CreateSection(section, grade);
                 this.Close();
             }
             else MessageBox.Show("There's either no teacher or student information", "Input-Error");
         }
-        else MessageBox.Show("Invalid SectionName value", "Input-Error");
+        else MessageBox.Show("Invalid SectionName value or No grade value", "Input-Error");
     }
 }

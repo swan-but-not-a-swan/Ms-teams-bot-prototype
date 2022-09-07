@@ -6,14 +6,14 @@ public partial class CreateMeeting : Form
     private Grade grade { get; set; }
     private Section section { get; set; }
     private IEducator Educator { get; set; }
-    public CreateMeeting(List<Batch> info, IEducator educator)//refactored and tested
+    public CreateMeeting(List<Batch> info, IEducator educator)//final tested
     {
         InitializeComponent();
         Batches = info;
         Educator = educator;
         WireUpForm();
     }
-    private void WireUpForm()//refactored and tested
+    private void WireUpForm()//final tested
     {
         ShowBatch();
         batch = (Batch)batchComboBox.SelectedItem;
@@ -22,7 +22,7 @@ public partial class CreateMeeting : Form
         ShowSection();
         ShowInfoOnTextBox();
     }
-    private void batchComboBox_SelectedIndexChanged(object sender, EventArgs e)//refactored and tested
+    private void batchComboBox_SelectedIndexChanged(object sender, EventArgs e)//final tested
     {
         batch = (Batch)batchComboBox.SelectedItem;
         ShowGrade();
@@ -30,43 +30,40 @@ public partial class CreateMeeting : Form
         ShowSection();
         ShowInfoOnTextBox();
     }
-    private void gradeComboBox_SelectedIndexChanged(object sender, EventArgs e)//refactored and tested
+    private void gradeComboBox_SelectedIndexChanged(object sender, EventArgs e)//final tested
     {
         grade = (Grade)gradeComboBox.SelectedItem;
         ShowSection();
         ShowInfoOnTextBox();
     }
-    private void sectionComboBox_SelectedIndexChanged(object sender, EventArgs e)//refactored and tested
+    private void sectionComboBox_SelectedIndexChanged(object sender, EventArgs e)//final tested
     {
         ShowInfoOnTextBox();
     }
-    private void ShowBatch()//refactored and tested
+    private void ShowBatch()//final tested
     {
         batchComboBox.DataSource = Batches;
         batchComboBox.DisplayMember = "Name";
     }
-    private void ShowGrade()//refactored and tested
+    private void ShowGrade()//final tested
     {
         gradeComboBox.DataSource = batch.Grades;
         gradeComboBox.DisplayMember = "Name";
     }
-    private void ShowSection()//refactored and tested
+    private void ShowSection()//final tested
     {
         sectionComboBox.DataSource = grade.Sections;
         sectionComboBox.DisplayMember = "Name";
     }
-    private void ShowInfoOnTextBox()//refactored and tested
+    private void ShowInfoOnTextBox()//final tested
     {
         section = (Section)sectionComboBox.SelectedItem;
         meetingInfoValue.Text = $"{batch.Name} {grade.Name} {section.Name} {section.Teachers[0].Subject}";
     }
-    private void createMeetingButton_Click(object sender, EventArgs e)//refactored and tested
+    private void createMeetingButton_Click(object sender, EventArgs e)//final tested
     {
-        Batch b = new Batch();
-        b.Name = b.Name;
-        Grade g = new Grade();
-        g.Name = grade.Name;
-        b.Grades.Insert(0, g);
+        Batch b = new Batch { Name = batch.Name};
+        b.Grades.Insert(0, new Grade { Name = grade.Name });
         b.Grades[0].Sections.Add(section);
         MeetingInvitationForm frm = new MeetingInvitationForm(b, Educator);
         frm.Show();

@@ -1,30 +1,27 @@
 ﻿namespace Ms_teams_bot_prototype;
 public partial class MessageForm : Form
 {
-    private MeetingForm meetingForm = new MeetingForm();
-    string command;
     private static IAttendee Attendee { get; set; }
-    public MessageForm(IAttendee attendee)
+    public MessageForm(IAttendee attendee)//final tested
     {
         InitializeComponent();
         label1.Text = attendee.Name;
         Attendee = attendee;
         WireUpForm();
     }
-    private void WireUpForm()
+    private void WireUpForm()//final tested
     {
         CommandAnalyzer.ChooseMode(Attendee);
         GlobalTools.ShowText += GlobalTools_ShowText;
         CommandAnalyzer.CreateSection += CommandAnalyzer_CreateSection;
-        CommandAnalyzer.MakeMeeting += CommandAnalyzer_MakeMeeting1;
+        CommandAnalyzer.MakeMeeting += CommandAnalyzer_MakeMeeting;
         CommandAnalyzer.CreateMeeting += CommandAnalyzer_CreateMeeting;
         CommandAnalyzer.GetExcelPath += CommandAnalyzer_GetExcelPath;
         CommandAnalyzer.GetAttendence += CommandAnalyzer_GetAttendence;
         CommandAnalyzer.GetExcelFilePath += CommandAnalyzer_GetExcelFilePath;
         intellisense.DataSource = Attendee.GetAllCommands();
     }
-
-    private async void CommandAnalyzer_GetExcelFilePath(string BatchName,string GradeName,Section section, Period period, IAttendee attendee)
+    private async void CommandAnalyzer_GetExcelFilePath(string BatchName,string GradeName,Section section, Period period, IAttendee attendee)//final tested
     {
         using(var openFileDialog = new OpenFileDialog())
         {
@@ -43,14 +40,12 @@ public partial class MessageForm : Form
             }
         }
     }
-
-    private void CommandAnalyzer_GetAttendence(List<Batch> batches, IAttendee Attendee)
+    private void CommandAnalyzer_GetAttendence(List<Batch> batches, IAttendee Attendee)//final tested
     {
         AttendanceForm frm = new AttendanceForm(batches,Attendee);
         frm.Show();
     }
-
-    private void CommandAnalyzer_GetExcelPath()//refactored and tested
+    private void CommandAnalyzer_GetExcelPath()//final tested
     {
         DialogResult result = fbd.ShowDialog();
         if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
@@ -58,26 +53,25 @@ public partial class MessageForm : Form
             GlobalTools.ExcelPath = fbd.SelectedPath;
         }
     }
-    private void CommandAnalyzer_CreateMeeting(List<Batch> batches, IEducator educator)//refactored and tested
+    private void CommandAnalyzer_CreateMeeting(List<Batch> batches, IEducator educator)//final tested
     {
         CreateMeeting cm = new CreateMeeting(batches, educator);
         cm.Show();
     }
-    private void CommandAnalyzer_MakeMeeting1(string BatchName, string GradeName, Section section, IEducator educator)//refactored and tested
+    private void CommandAnalyzer_MakeMeeting(string BatchName, string GradeName, Section section, IEducator educator)//final tested
     {
-        Batch batch = new Batch();
-        batch.Name = BatchName;
+        Batch batch = new Batch { Name = BatchName};
         batch.Grades.Add(new Grade { Name = GradeName });
         batch.Grades[0].Sections.Add(section);
         MeetingInvitationForm frm = new MeetingInvitationForm(batch, educator);
         frm.Show();
     }
-    private void CommandAnalyzer_CreateSection(List<Batch> batches, IExcuetive excuetive)//refactored and tested
+    private void CommandAnalyzer_CreateSection(List<Batch> batches, IExcuetive excuetive)//final tested
     {
         CreateSection cs = new CreateSection(batches, excuetive);
         cs.Show();
     }
-    private void GlobalTools_ShowText(string comment)
+    private void GlobalTools_ShowText(string comment)//final tested
     {
         if (messageShowerBox.InvokeRequired)
         {
@@ -86,10 +80,7 @@ public partial class MessageForm : Form
         }
         else messageShowerBox.Text += comment + Environment.NewLine;
     }
-    private void MessageForm_Load(object sender, EventArgs e)
-    {
-    }
-    private void sendButton_Click(object sender, EventArgs e)
+    private void sendButton_Click(object sender, EventArgs e)//final tested
     {
         string cwa = "";
         if(messageBox.Enabled == true)
@@ -103,7 +94,7 @@ public partial class MessageForm : Form
             intellisense.Text = "";
         }
         messageShowerBox.Text += cwa + Environment.NewLine;
-        if (cwa.StartsWith("-"))
+        if (cwa.Trim().StartsWith("-"))
         {
             cwa = CommandAnalyzer.Analyze(Attendee,cwa);
             if(cwa.Length > 0)
@@ -113,14 +104,9 @@ public partial class MessageForm : Form
         }
         messageShowerBox.SelectionStart = messageShowerBox.Text.Length;
         messageShowerBox.ScrollToCaret();
-    }
-    private void messageFormLabel_Click(object sender, EventArgs e)
+    } 
+    private void messageBox_TextChanged(object sender, EventArgs e)//final tested
     {
-    }
-
-    private void messageBox_TextChanged(object sender, EventArgs e)
-    {
-        command = messageBox.Text;
         if(messageBox.Text.StartsWith("-"))
         {
             messageBox.Enabled = false;
@@ -132,10 +118,8 @@ public partial class MessageForm : Form
             intellisense.SelectionStart = intellisense.Text.Length;         
         }
     }
-
-    private void intellisensetextChanged(object sender, EventArgs e)
+    private void intellisensetextChanged(object sender, EventArgs e)//final tested
     {
-        command = intellisense.Text;
         if(!intellisense.Text.StartsWith("-"))
         {
             messageBox.Enabled = true;
@@ -144,15 +128,5 @@ public partial class MessageForm : Form
             intellisense.Visible = false;
             messageBox.Text = intellisense.Text;
         }
-    }
-
-    private void intellisense_SelectedIndexChanged(object sender, EventArgs e)
-    {
-
-    }
-
-    private void messageShowerBox_TextChanged(object sender, EventArgs e)
-    {
-
     }
 }

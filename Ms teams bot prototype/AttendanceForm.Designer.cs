@@ -240,7 +240,6 @@
             this.subjectComboBox.Name = "subjectComboBox";
             this.subjectComboBox.Size = new System.Drawing.Size(204, 38);
             this.subjectComboBox.TabIndex = 74;
-            this.subjectComboBox.SelectedIndexChanged += new System.EventHandler(this.subjectComboBox_SelectedIndexChanged);
             // 
             // periodLabel
             // 

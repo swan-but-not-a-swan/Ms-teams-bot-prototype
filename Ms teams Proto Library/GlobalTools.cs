@@ -8,13 +8,13 @@ public static class GlobalTools
 
     public delegate void showText(string comment);
     public static event showText ShowText;
-    public static bool ValidateData(string Name, string Email)
+    public static bool ValidateData(string Name, string Email)//final tested
     {
         if (Name.Length <= 0) return false;
         if (Email.Length <= 0 || (Email.EndsWith("@ilbc.edu.mm") == false)) return false;
         return true;
     }
-    public static string GetSpacedName(string name)
+    public static string GetSpacedName(string name)//final tested
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < name.Length; i++)
@@ -27,7 +27,7 @@ public static class GlobalTools
         }
         return sb.ToString().Trim();
     }
-    public static void ShowTextFromDocumentation()
+    public static void ShowTextFromDocumentation()//final tested
     {
         var lines = File.ReadAllLines(GlobalTools.ReadMeFilePath);
         StringBuilder text = new();
@@ -37,7 +37,7 @@ public static class GlobalTools
         }
         ShowText?.Invoke(text.ToString());
     }
-    public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//refactored and tested
+    public static void ShowMeetingInfoOnMessageForm(string BatchName, string GradeName, Section section, Period period)//final tested
     {
         StringBuilder info = new StringBuilder();
         info.AppendLine($"ID : {period.ID} {period.StartTime.ToShortDateString()} {BatchName} {GradeName} {section.Name} " +
@@ -50,7 +50,7 @@ public static class GlobalTools
         }
         ShowText?.Invoke(info.ToString());
     }
-    public static void ShowGradeInfoOnMeetingForm(string BatchName, Grade grade)
+    public static void ShowGradeInfoOnMeetingForm(string BatchName, Grade grade)//final tested
     {
         StringBuilder info = new StringBuilder();
         info.AppendLine($"{BatchName} {grade.Name}");
@@ -60,7 +60,7 @@ public static class GlobalTools
         }
         ShowText?.Invoke(info.ToString());
     }
-    public static void ShowSectionInfoOnMeetingForm(string BatchName, string gradeName, Section section)
+    public static void ShowSectionInfoOnMeetingForm(string BatchName, string gradeName, Section section)//final tested
     {
         StringBuilder info = new StringBuilder();
         info.AppendLine($"{BatchName} {gradeName} {section.Name}");
